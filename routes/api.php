@@ -7,10 +7,20 @@ use App\Http\Controllers\Users\Auth\LogoutController;
 use App\Http\Controllers\Users\Auth\ResetPasswordController;
 use App\Http\Controllers\Users\Profile\GetUserInfoController;
 use App\Http\Controllers\Users\Profile\UpdateUserController;
+use App\Http\Controllers\Users\Profile\UpdatePasswordController;
 use App\Http\Controllers\Users\GarbagePosts\CreateGarbagePostController;
 use App\Http\Controllers\Users\GarbagePosts\UpdateGarbagePostController;
 use App\Http\Controllers\Users\GarbagePosts\DeleteGarbagePostController;
 use App\Http\Controllers\Users\GarbagePosts\DetailGarbagePostController;
+use App\Http\Controllers\Users\GarbagePosts\GetListGarbagePostController;
+use App\Http\Controllers\Users\GarbagePosts\Comments\CreateCommentController;
+use App\Http\Controllers\Users\GarbagePosts\Comments\DeleteCommentController;
+use App\Http\Controllers\Users\GarbagePosts\Reactions\AddReactionController;
+use App\Http\Controllers\Users\GarbagePosts\Reactions\RemoveReactionController;
+use App\Http\Controllers\Users\Points\GetPointController;
+use App\Http\Controllers\Users\ActivityLogs\GetActivityLogsController;
+use App\Http\Controllers\Users\NotificationSettings\GetNotificationSettingsController;
+use App\Http\Controllers\Users\NotificationSettings\UpdateNotificationSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,17 +43,40 @@ Route::namespace('Users')->group(function () {
         Route::post('/logout', 'AuthController@logout')->middleware('auth:api');
         Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword']);
     });
-    Route::middleware('auth:api')->group(function () {
+    Route::prefix('user')->middleware('auth:api')->group(function () {
         Route::namespace('Profile')->group(function() {
-            Route::get('/user', [GetUserInfoController::class, 'view']);
-            Route::put('/user', [UpdateUserController::class, 'update']);
+            Route::get('/', [GetUserInfoController::class, 'view']);
+            Route::put('/', [UpdateUserController::class, 'update']);
+            Route::post('/update-password', [UpdatePasswordController::class, 'update']);
         });
-        Route::namespace('GarbagePosts')->group(function() {
-            Route::post('/garbage-posts', [CreateGarbagePostController::class, 'store']);
-            Route::put('/garbage-posts/{garbagePostId}', [UpdateGarbagePostController::class, 'update']);
-            Route::delete('/garbage-posts/{garbagePostId}', [DeleteGarbagePostController::class, 'delete']);
-            Route::get('/garbage-posts/{garbagePostId}', [DetailGarbagePostController::class, 'show']);
-            Route::get('/users/{userId}/garbage-posts', [GetListGarbagePostController::class, 'getList']);
+        Route::prefix('garbage-posts')->namespace('GarbagePosts')->group(function() {
+            Route::post('/', [CreateGarbagePostController::class, 'store']);
+            Route::post('/{garbagePostId}', [UpdateGarbagePostController::class, 'update']);
+            Route::delete('/{garbagePostId}', [DeleteGarbagePostController::class, 'delete']);
+            Route::get('/{garbagePostId}', [DetailGarbagePostController::class, 'show']);
+            Route::get('/', [GetListGarbagePostController::class, 'index']);
+
+            Route::prefix('{garbagePostId}')->group(function () {
+                Route::prefix('comments')->namespace('Comments')->group(function () {
+                    Route::post('/', [CreateCommentController::class, 'store']);
+                    Route::delete('/{commentId}', [DeleteCommentController::class, 'destroy']);
+                });
+
+                Route::prefix('reactions')->namespace('Reactions')->group(function () {
+                    Route::post('/', [AddReactionController::class, 'store']);
+                    Route::delete('/{reactionId}', [RemoveReactionController::class, 'destroy']);
+                });
+            });
+        });
+        Route::namespace('Points')->group(function() {
+            Route::get('/point', [GetPointController::class, 'view']);
+        });
+        Route::namespace('ActivityLogs')->group(function() {
+            Route::get('/activity-logs', [GetActivityLogsController::class, 'index']);
+        });
+        Route::prefix('notification-settings')->namespace('NotificationSettings')->group(function() {
+            Route::get('/', [GetNotificationSettingsController::class, 'index']);
+            Route::post('/{settingId}', [UpdateNotificationSettingController::class, 'update']);
         });
     });
 });

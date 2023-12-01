@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Users\GarbagePosts;
 
 use App\Http\Controllers\Controller;
-use App\Models\GarbagePost;
 use App\Repositories\GarbagePostRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GetListGarbagePostController extends Controller
 {
@@ -16,14 +16,22 @@ class GetListGarbagePostController extends Controller
         $this->garbagePostRepository = $garbagePostRepository;
     }
 
-    public function getList(Request $request, $userId)
+    public function index(Request $request)
     {
-        $garbagePosts = $this->garbagePostRepository->queryByCondition(['user_id' => $userId])
-            ->with('images')
-            ->get();
+        $userId = Auth::user()->id; 
 
-        return response()->json([
-            'garbagePosts' => $garbagePosts,
-        ], 200);
+        try {
+            $garbagePosts = $this->garbagePostRepository->queryByCondition(['user_id' => $userId])
+                ->with('images')
+                ->get();
+
+            return response()->json([
+                'garbagePosts' => $garbagePosts,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve list posts',
+            ], 500);
+        }
     }
 }

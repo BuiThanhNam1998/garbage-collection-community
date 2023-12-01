@@ -29,6 +29,16 @@ class BaseRepository
         return $this->model->create($data);
     }
 
+    public function update($data)
+    {
+        return $this->model->update($data);
+    }
+
+    public function updateByCondition($condition, $data)
+    {
+        return $this->model->where($condition)->update($data);
+    }
+
     public function queryByCondition($condition)
     {
         return $this->model->where($condition);
