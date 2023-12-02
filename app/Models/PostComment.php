@@ -21,4 +21,9 @@ class PostComment extends Model
     {
         return $this->belongsTo(GarbagePost::class);
     }
+
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
 }

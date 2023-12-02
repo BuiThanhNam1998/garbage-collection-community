@@ -8,7 +8,8 @@ class GarbagePost extends Model
 {
     protected $fillable = [
         'description',
-        'location',
+        'locationable_id',
+        'locationable_type',
         'date',
         'user_id',
         'verification_status',
@@ -25,5 +26,22 @@ class GarbagePost extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function reports()
+    {
+        return $this->morphMany(Report::class, 'reportable');
+    }
+
+    public function locationable()
+    {
+        return $this->morphTo();
+    }
+
+
+    public function scopeApproved($q) 
+    {
+        return $q->where('verification_status', true)
+            ->orWhere('ai_verification_status', true);
     }
 }

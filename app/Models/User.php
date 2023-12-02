@@ -68,4 +68,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(UserReward::class);
     }
+
+    public function garbagePosts()
+    {
+        return $this->hasMany(GarbagePost::class);
+    }
 }

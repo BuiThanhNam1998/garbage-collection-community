@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class GarbagePostImage extends Model
 {
-    protected $fillable = ['image_path', 'type'];
+    protected $fillable = ['image_path', 'type', 'garbage_post_id'];
 
     public function garbagePost()
     {

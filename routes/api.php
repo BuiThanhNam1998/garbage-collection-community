@@ -21,6 +21,14 @@ use App\Http\Controllers\Users\Points\GetPointController;
 use App\Http\Controllers\Users\ActivityLogs\GetActivityLogsController;
 use App\Http\Controllers\Users\NotificationSettings\GetNotificationSettingsController;
 use App\Http\Controllers\Users\NotificationSettings\UpdateNotificationSettingController;
+use App\Http\Controllers\Users\Reports\CreateReportController;
+use App\Http\Controllers\Public\GarbagePosts\GetPostListController;
+use App\Http\Controllers\Public\GarbagePosts\GetPostDetailController;
+use App\Http\Controllers\Public\GarbagePosts\GetPostListByLocationController;
+use App\Http\Controllers\Public\Users\GetUserProfileController;
+use App\Http\Controllers\Public\Users\GetLeaderboardController;
+use App\Http\Controllers\Public\Events\GetUpcomingEventsController;
+use App\Http\Controllers\Public\Statistics\GetStatisticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,5 +86,26 @@ Route::namespace('Users')->group(function () {
             Route::get('/', [GetNotificationSettingsController::class, 'index']);
             Route::post('/{settingId}', [UpdateNotificationSettingController::class, 'update']);
         });
+        Route::prefix('reports')->namespace('Reports')->group(function() {
+            Route::post('/', [CreateReportController::class, 'store']);
+        });
+    });
+});
+
+Route::namespace('Public')->group(function() {
+    Route::prefix('garbage-posts')->namespace('GarbagePosts')->group(function() {
+        Route::get('/', [GetPostListController::class, 'index']);
+        Route::get('/{garbagePostId}', [GetPostDetailController::class, 'show']);
+        Route::get('/location/{locationType}/{locationId}', [GetPostListByLocationController::class, 'index']);
+    });
+    Route::prefix('users')->namespace('Users')->group(function() {
+        Route::get('/profiles/{userId}', [GetUserProfileController::class, 'show']);
+        Route::get('/leaderboard', [GetLeaderboardController::class, 'getLeaderboard']);
+    });
+    Route::prefix('events')->namespace('Users')->group(function() {
+        Route::get('/upcoming', [GetUpcomingEventsController::class, 'index']);
+    });
+    Route::prefix('statistics')->namespace('Statistic')->group(function() {
+        Route::get('/', [GetStatisticsController::class, 'index']);
     });
 });

@@ -42,7 +42,8 @@ class UpdateGarbagePostController extends Controller
 
             $garbagePostData = [
                 'description' => $request->description,
-                'location' => $request->location,
+                'locationable_type' => $request->locationable_type,
+                'locationable_id' => $request->locationable_id,
                 'date' => $request->date,
             ];
 
