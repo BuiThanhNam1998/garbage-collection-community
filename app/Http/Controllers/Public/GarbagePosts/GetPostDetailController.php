@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Users\GarbagePosts;
+namespace App\Http\Controllers\Public\GarbagePosts;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\GarbagePostRepository;
 use App\Repositories\GarbagePostImageRepository;
-use Illuminate\Support\Facades\Auth;
 
-class DetailGarbagePostController extends Controller
+class GetPostDetailController extends Controller
 {
     protected $garbagePostRepository;
     protected $garbagePostImageRepository;
@@ -22,12 +21,10 @@ class DetailGarbagePostController extends Controller
 
     public function show($garbagePostId)
     {
-        $user = Auth::user(); 
-
         try {
             $garbagePost = $this->garbagePostRepository->find($garbagePostId);
 
-            if ($garbagePost->user_id !== $user->id) {
+            if (!($garbagePost->verification_status || $garbagePost->ai_verification_status)) {
                 return response()->json([
                     'message' => 'You do not have permission to view the details of this post',
                 ], 403);

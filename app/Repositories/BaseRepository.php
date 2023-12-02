@@ -53,4 +53,14 @@ class BaseRepository
     {
         return $this->model->destroy($id);
     }
+
+    public function count()
+    {
+        return $this->model->count();
+    }
+
+    public function last()
+    {
+        return $this->model->latest()->first();
+    }
 }

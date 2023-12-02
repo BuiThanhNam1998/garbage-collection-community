@@ -16,7 +16,8 @@ class CreateGarbagePostController extends Controller
             DB::beginTransaction();
             $validatedData = $request->validate([
                 'description' => 'required',
-                'location' => 'required',
+                'locationable_type' => 'required',
+                'locationable_id' => 'required',
                 'date' => 'required|date',
                 'before_images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
                 'after_images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 

@@ -10,4 +10,10 @@ class UserRepository extends BaseRepository
     {
         parent::__construct($user);
     }
+
+    public function queryLeaderboard()
+    {
+        return User::leftJoin('points', 'users.id', '=', 'points.user_id')
+            ->orderByDesc('points.points');
+    }
 }
