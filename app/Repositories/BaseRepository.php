@@ -23,6 +23,10 @@ class BaseRepository
         return $this->model->findOrFail($id);
     }
 
+    public function all()
+    {
+        return $this->model->all();
+    }
 
     public function create($data)
     {
@@ -62,5 +66,15 @@ class BaseRepository
     public function last()
     {
         return $this->model->latest()->first();
+    }
+
+    public function queryWithDetail()
+    {
+        return $this->model->with(['userDetail']);
+    }
+
+    public function updateByIds($ids, $data)
+    {
+        return $this->model->whereIn('id', $ids)->update($data);
     }
 }

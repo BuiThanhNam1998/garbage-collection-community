@@ -29,6 +29,21 @@ use App\Http\Controllers\Public\Users\GetUserProfileController;
 use App\Http\Controllers\Public\Users\GetLeaderboardController;
 use App\Http\Controllers\Public\Events\GetUpcomingEventsController;
 use App\Http\Controllers\Public\Statistics\GetStatisticsController;
+use App\Http\Controllers\Admins\Auth\LoginController as AdminLoginController;
+use App\Http\Controllers\Admins\Users\GetUsersController;
+use App\Http\Controllers\Admins\Users\GetUserDetailController;
+use App\Http\Controllers\Admins\Users\UpdateUserController as AdminUpdateUserController;
+use App\Http\Controllers\Admins\Users\DeleteUserController;
+use App\Http\Controllers\Admins\Users\UserRewards\AddRewardController;
+use App\Http\Controllers\Admins\Comments\GetAllCommentsController;
+use App\Http\Controllers\Admins\Reports\GetReportsController;
+use App\Http\Controllers\Admins\Reports\GetReportDetailController;
+use App\Http\Controllers\Admins\GarbagePosts\VerifyPostController;
+use App\Http\Controllers\Admins\GarbagePosts\VerifyBulkPostController;
+use App\Http\Controllers\Admins\Feedback\GetFeedbackController;
+use App\Http\Controllers\Admins\Feedback\GetFeedbackDetailController;
+use App\Http\Controllers\Admins\Feedback\UpdateFeedbackController;
+use App\Http\Controllers\Admins\Feedback\DeleteFeedbackController;
 
 /*
 |--------------------------------------------------------------------------
@@ -107,5 +122,42 @@ Route::namespace('Public')->group(function() {
     });
     Route::prefix('statistics')->namespace('Statistic')->group(function() {
         Route::get('/', [GetStatisticsController::class, 'index']);
+    });
+});
+
+Route::prefix('admins')->namespace('Admins')->group(function() {
+    Route::namespace('Auth')->group(function () {
+        Route::post('/login', [AdminLoginController::class, 'login']);
+    });
+    Route::middleware('auth:admin')->group(function () {
+        Route::prefix('users')->namespace('Users')->group(function() {
+            Route::get('/', [GetUsersController::class, 'index']);
+            Route::get('/{userId}', [GetUserDetailController::class, 'show']);
+            Route::post('/{userId}', [AdminUpdateUserController::class, 'update']);
+            Route::delete('/{userId}', [DeleteUserController::class, 'destroy']);
+
+            Route::prefix('{userId}')->group(function () {
+                Route::prefix('rewards')->namespace('UserRewards')->group(function() {
+                    Route::post('/', [AddRewardController::class, 'store']);
+                });
+            });
+        });
+        Route::prefix('comments')->namespace('Comments')->group(function() {
+            Route::get('/get-all', [GetAllCommentsController::class, 'index']);
+        });
+        Route::prefix('reports')->namespace('Reports')->group(function() {
+            Route::get('/', [GetReportsController::class, 'index']);
+            Route::get('/{reportId}', [GetReportDetailController::class, 'show']);
+        });
+        Route::prefix('garbage-posts')->namespace('GarbagePosts')->group(function() {
+            Route::post('/{garbagePostId}/verify', [VerifyPostController::class, 'update']);
+            Route::post('/verify-bulk-post', [VerifyBulkPostController::class, 'update']);
+        });
+        Route::prefix('feedback')->namespace('Feedback')->group(function() {
+            Route::get('/', [GetFeedbackController::class, 'index']);
+            Route::get('/{feedbackId}', [GetFeedbackDetailController::class, 'show']);
+            Route::post('/{feedbackId}', [UpdateFeedbackController::class, 'update']);
+            Route::delete('/{feedbackId}', [DeleteFeedbackController::class, 'destroy']);
+        });
     });
 });

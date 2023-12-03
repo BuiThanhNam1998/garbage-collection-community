@@ -17,6 +17,11 @@ class GarbagePostRepository extends BaseRepository
         return $this->model->approved();
     }
 
+    public function queryPendingPost() 
+    {
+        return $this->model->pending();
+    }
+
     public function queryByCountry($countryId, $cityIds) 
     {
         return $this->queryApprovePost()
@@ -36,5 +41,10 @@ class GarbagePostRepository extends BaseRepository
         return $this->queryApprovePost()
             ->where('locationable_type', $locationType)
             ->where('locationable_id', $locationId);
+    }
+
+    public function queryByIds($ids)
+    {
+        return $this->model->whereIn('id', $ids);
     }
 }

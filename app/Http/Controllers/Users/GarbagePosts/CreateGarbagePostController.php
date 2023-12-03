@@ -2,14 +2,26 @@
 
 namespace App\Http\Controllers\Users\GarbagePosts;
 
+use App\Enums\User\GarbagePostImage\Type;
 use App\Http\Controllers\Controller;
-use App\Models\GarbagePost;
-use App\Models\GarbagePostImage;
 use Illuminate\Http\Request;
+use App\Repositories\GarbagePostRepository;
+use App\Repositories\GarbagePostImageRepository;
 use Illuminate\Support\Facades\DB;
 
 class CreateGarbagePostController extends Controller
 {
+    protected $garbagePostRepository;
+    protected $garbagePostImageRepository;
+
+    public function __construct(
+        GarbagePostRepository $garbagePostRepository,
+        GarbagePostImageRepository $garbagePostImageRepository
+    ) {
+        $this->garbagePostRepository = $garbagePostRepository;
+        $this->garbagePostImageRepository = $garbagePostImageRepository;
+    }
+
     public function store(Request $request)
     {
         try {
@@ -25,43 +37,58 @@ class CreateGarbagePostController extends Controller
 
             $user = $request->user(); 
 
-            $garbagePost = new GarbagePost($validatedData);
-            $garbagePost->user()->associate($user);
-            $garbagePost->save();   
+            $garbagePostData = [
+                'description' => $request->description,
+                'locationable_type' => $request->locationable_type,
+                'locationable_id' => $request->locationable_id,
+                'date' => $request->date,
+                'user_id' => $user->id, 
+            ];
+
+            $garbagePost = $this->garbagePostRepository->create($garbagePostData);
 
             if ($request->hasFile('before_images') && $request->hasFile('after_images')) {
-                foreach ($request->file('before_images') as $image) {
-                    $path = $image->store('garbage_post_images'); 
-
-                    $garbagePostImage = new GarbagePostImage([
-                        'image_path' => $path,
-                        'type' => 'bebore', 
-                    ]);
-                    $garbagePost->images()->save($garbagePostImage);
-                }
-
-                foreach ($request->file('after_images') as $image) {
-                    $path = $image->store('garbage_post_images'); 
-
-                    $garbagePostImage = new GarbagePostImage([
-                        'image_path' => $path,
-                        'type' => 'after', 
-                    ]);
-                    $garbagePost->images()->save($garbagePostImage);
-                }
+                $this->saveImagesAndCreateGarbagePostImages(
+                    $request->file('before_images'),
+                    Type::BEFORE,
+                    $garbagePost->id
+                );
+    
+                $this->saveImagesAndCreateGarbagePostImages(
+                    $request->file('after_images'),
+                    Type::AFTER,
+                    $garbagePost->id
+                );
             }
             DB::commit();
 
             return response()->json([
-                'message' => 'Create successful',
-                'garbagePost' => $garbagePost,
+                'message' => 'Post has been created successfully',
+                'garbagePost' => $garbagePost->load(['images']),
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
 
             return response()->json([
-                'message' => 'Something went wrong',
+                'message' => 'An error occurred while creating post',
             ], 500);
+        }
+    }
+
+    protected function saveImagesAndCreateGarbagePostImages($images, $type, $garbagePostId)
+    {
+        if ($images) {
+            foreach ($images as $image) {
+                $path = $image->store('garbage_post_images');
+
+                $garbagePostImageData = [
+                    'garbage_post_id' => $garbagePostId,
+                    'image_path' => $path,
+                    'type' => $type,
+                ];
+
+                $this->garbagePostImageRepository->create($garbagePostImageData);
+            }
         }
     }
 }

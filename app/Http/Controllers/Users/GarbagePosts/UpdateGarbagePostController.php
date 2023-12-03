@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Users\GarbagePosts;
 
+use App\Enums\User\GarbagePostImage\Type;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Repositories\GarbagePostRepository;
@@ -51,13 +52,13 @@ class UpdateGarbagePostController extends Controller
 
             $this->saveImagesAndCreateGarbagePostImages(
                 $request->file('before_images'),
-                'before',
+                Type::BEFORE,
                 $garbagePostId
             );
 
             $this->saveImagesAndCreateGarbagePostImages(
                 $request->file('after_images'),
-                'after',
+                Type::AFTER,
                 $garbagePostId
             );
             DB::commit();
