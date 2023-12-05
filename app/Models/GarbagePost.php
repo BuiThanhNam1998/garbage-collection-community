@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\User\GarbagePost\Status;
 use Illuminate\Database\Eloquent\Model;
 
 class GarbagePost extends Model
@@ -38,10 +39,15 @@ class GarbagePost extends Model
         return $this->morphTo();
     }
 
-
     public function scopeApproved($q) 
     {
-        return $q->where('verification_status', true)
-            ->orWhere('ai_verification_status', true);
+        return $q->where('verification_status', Status::APPROVED)
+            ->orWhere('ai_verification_status', Status::APPROVED);
+    }
+
+    public function scopePending($q) 
+    {
+        return $q->where('verification_status', Status::PENDING)
+            ->where('ai_verification_status', Status::PENDING);
     }
 }

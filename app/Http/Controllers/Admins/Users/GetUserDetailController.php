@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Public\Users;
+namespace App\Http\Controllers\Admins\Users;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 
-class GetUserProfileController extends Controller
+class GetUserDetailController extends Controller
 {
     protected $userRepository;
 
@@ -19,12 +19,13 @@ class GetUserProfileController extends Controller
         try {
             $user = $this->userRepository->find($userId);
 
-            $user->load([
-                'userDetail',
-                'garbagePosts' => function ($q) {
-                    $q->approved()->with('images')->paginate(10);
-                }
-            ]);
+            if (!$user) {
+                return response()->json([
+                    'message' => 'User does not exist',
+                ], 400);
+            }
+
+            $user->load(['userDetail']);
 
             return response()->json([
                 'user' => $user,
