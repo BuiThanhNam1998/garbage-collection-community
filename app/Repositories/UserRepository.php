@@ -13,7 +13,12 @@ class UserRepository extends BaseRepository
 
     public function queryLeaderboard()
     {
-        return User::leftJoin('points', 'users.id', '=', 'points.user_id')
+        return $this->model->leftJoin('points', 'users.id', '=', 'points.user_id')
             ->orderByDesc('points.points');
+    }
+
+    public function queryByEmail($email)
+    {
+        return $this->model->where('email', $email);
     }
 }

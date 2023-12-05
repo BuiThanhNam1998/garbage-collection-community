@@ -26,4 +26,9 @@ class PostComment extends Model
     {
         return $this->morphMany(Report::class, 'reportable');
     }
+
+    public function moderationQueue()
+    {
+        return $this->morphOne(ModerationQueue::class, 'moderatable', 'object_type', 'object_id');
+    }
 }
