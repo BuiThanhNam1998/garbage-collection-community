@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\Auth\LoginController;
 use App\Http\Controllers\Users\Auth\LogoutController;
 use App\Http\Controllers\Users\Auth\ResetPasswordController;
+use App\Http\Controllers\Users\Auth\Google\LoginController as GoogleLoginController;
 use App\Http\Controllers\Users\Profile\GetUserInfoController;
 use App\Http\Controllers\Users\Profile\UpdateUserController;
 use App\Http\Controllers\Users\Profile\UpdatePasswordController;
@@ -29,6 +30,8 @@ use App\Http\Controllers\Public\Users\GetUserProfileController;
 use App\Http\Controllers\Public\Users\GetLeaderboardController;
 use App\Http\Controllers\Public\Events\GetUpcomingEventsController;
 use App\Http\Controllers\Public\Statistics\GetStatisticsController;
+use App\Http\Controllers\Public\News\GetLastedNewsController;
+use App\Http\Controllers\Public\EducationResources\GetListEducationResourceController;
 use App\Http\Controllers\Admins\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admins\Users\GetUsersController;
 use App\Http\Controllers\Admins\Users\GetUserDetailController;
@@ -44,6 +47,10 @@ use App\Http\Controllers\Admins\Feedback\GetFeedbackController;
 use App\Http\Controllers\Admins\Feedback\GetFeedbackDetailController;
 use App\Http\Controllers\Admins\Feedback\UpdateFeedbackController;
 use App\Http\Controllers\Admins\Feedback\DeleteFeedbackController;
+use App\Http\Controllers\Admins\ModerationQueue\GetModerationQueueController;
+use App\Http\Controllers\Admins\ModerationQueue\AddToModerationQueueController;
+use App\Http\Controllers\Admins\ModerationQueue\UpdateModerationQueueController;
+use App\Http\Controllers\Admins\ModerationQueue\RemoveFromModerationQueueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +72,13 @@ Route::namespace('Users')->group(function () {
         Route::post('/login', [LoginController::class, 'login']);
         Route::post('/logout', 'AuthController@logout')->middleware('auth:api');
         Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword']);
+
+        Route::namespace('Google')->group(function () {
+            Route::middleware('web')->group(function () {
+                Route::get('/auth/google', [GoogleLoginController::class,'redirectToGoogle']);
+                Route::get('/auth/google/callback', [GoogleLoginController::class, 'handleGoogleCallback']);
+            });
+        });
     });
     Route::prefix('user')->middleware('auth:api')->group(function () {
         Route::namespace('Profile')->group(function() {
@@ -123,6 +137,12 @@ Route::namespace('Public')->group(function() {
     Route::prefix('statistics')->namespace('Statistic')->group(function() {
         Route::get('/', [GetStatisticsController::class, 'index']);
     });
+    Route::prefix('news')->namespace('News')->group(function() {
+        Route::get('/lasted', [GetLastedNewsController::class, 'index']);
+    });
+    Route::prefix('education-resources')->namespace('EducationResources')->group(function() {
+        Route::get('/', [GetListEducationResourceController::class, 'index']);
+    });
 });
 
 Route::prefix('admins')->namespace('Admins')->group(function() {
@@ -158,6 +178,12 @@ Route::prefix('admins')->namespace('Admins')->group(function() {
             Route::get('/{feedbackId}', [GetFeedbackDetailController::class, 'show']);
             Route::post('/{feedbackId}', [UpdateFeedbackController::class, 'update']);
             Route::delete('/{feedbackId}', [DeleteFeedbackController::class, 'destroy']);
+        });
+        Route::prefix('moderation-queue')->namespace('ModerationQueue')->group(function() {
+            Route::get('/', [GetModerationQueueController::class, 'index']);
+            Route::post('/', [AddToModerationQueueController::class, 'store']);
+            Route::post('/{moderationId}', [UpdateModerationQueueController::class, 'update']);
+            Route::delete('/{moderationId}', [RemoveFromModerationQueueController::class, 'destroy']);
         });
     });
 });

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admins\Users;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use App\Repositories\UserRepository;
 
 class DeleteUserController extends Controller
@@ -18,8 +17,6 @@ class DeleteUserController extends Controller
 
     public function destroy($userId)
     {
-        $user = Auth::user(); 
-
         try {
             $this->userRepository->delete($userId);
 
