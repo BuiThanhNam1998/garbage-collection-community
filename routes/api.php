@@ -23,6 +23,9 @@ use App\Http\Controllers\Users\ActivityLogs\GetActivityLogsController;
 use App\Http\Controllers\Users\NotificationSettings\GetNotificationSettingsController;
 use App\Http\Controllers\Users\NotificationSettings\UpdateNotificationSettingController;
 use App\Http\Controllers\Users\Reports\CreateReportController;
+use App\Http\Controllers\Users\FavoritePosts\AddToFavoritePostController;
+use App\Http\Controllers\Users\FavoritePosts\RemoveFromFavoritePostController;
+use App\Http\Controllers\Users\FavoritePosts\GetFavoritePostsController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostListController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostDetailController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostListByLocationController;
@@ -51,6 +54,9 @@ use App\Http\Controllers\Admins\ModerationQueue\GetModerationQueueController;
 use App\Http\Controllers\Admins\ModerationQueue\AddToModerationQueueController;
 use App\Http\Controllers\Admins\ModerationQueue\UpdateModerationQueueController;
 use App\Http\Controllers\Admins\ModerationQueue\RemoveFromModerationQueueController;
+use App\Http\Controllers\Admins\AiPostQueue\GetAiPostQueueController;
+use App\Http\Controllers\Admins\AiPostQueue\AddToAiPostQueueController;
+use App\Http\Controllers\Admins\AiLogs\GetAiLogsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -118,6 +124,11 @@ Route::namespace('Users')->group(function () {
         Route::prefix('reports')->namespace('Reports')->group(function() {
             Route::post('/', [CreateReportController::class, 'store']);
         });
+        Route::prefix('favorite-posts')->namespace('FavoritePosts')->group(function() {
+            Route::get('/', [GetFavoritePostsController::class, 'index']);
+            Route::post('/', [AddToFavoritePostController::class, 'store']);
+            Route::delete('/', [RemoveFromFavoritePostController::class, 'destroy']);
+        });
     });
 });
 
@@ -184,6 +195,13 @@ Route::prefix('admins')->namespace('Admins')->group(function() {
             Route::post('/', [AddToModerationQueueController::class, 'store']);
             Route::post('/{moderationId}', [UpdateModerationQueueController::class, 'update']);
             Route::delete('/{moderationId}', [RemoveFromModerationQueueController::class, 'destroy']);
+        });
+        Route::prefix('ai-post-queue')->namespace('AiPostQueue')->group(function() {
+            Route::get('/', [GetAiPostQueueController::class, 'index']);
+            Route::post('/', [AddToAiPostQueueController::class, 'store']);
+        });
+        Route::prefix('ai-logs')->namespace('AiLogs')->group(function() {
+            Route::get('/', [GetAiLogsController::class, 'index']);
         });
     });
 });
