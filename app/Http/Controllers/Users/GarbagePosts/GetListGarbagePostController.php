@@ -21,7 +21,7 @@ class GetListGarbagePostController extends Controller
         $userId = Auth::user()->id; 
 
         try {
-            $garbagePosts = $this->garbagePostRepository->queryByCondition(['user_id' => $userId])
+            $garbagePosts = $this->garbagePostRepository->queryByUserId($userId)
                 ->with('images')
                 ->get();
 
@@ -30,7 +30,7 @@ class GetListGarbagePostController extends Controller
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to retrieve list posts',
+                'message' => 'An error occurred while retrieving post list',
             ], 500);
         }
     }

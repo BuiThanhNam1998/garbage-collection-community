@@ -18,10 +18,15 @@ class UpdateUserController extends Controller
 
     public function update(Request $request, $userId)
     {
-        $userData = $request->only(['name', 'email']);
-
         try {
             DB::beginTransaction();
+
+            $request->validate([
+                'email' => 'email',
+                'avatar' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
+            ]);
+    
+            $userData = $request->only(['name', 'email', 'avatar']);
 
             $user = $this->userRepository->find($userId);
 

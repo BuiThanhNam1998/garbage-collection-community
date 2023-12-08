@@ -20,6 +20,11 @@ class UpdateUserController extends Controller
     {
         $userId = $request->user()->id; 
 
+        $request->validate([
+            'email' => 'email',
+            'avatar' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
+        ]);
+
         $userData = $request->only(['name', 'email']);
 
         try {
@@ -28,6 +33,12 @@ class UpdateUserController extends Controller
             $user = $this->userRepository->find($userId);
 
             if (!empty($userData)) {
+
+                if ($request->hasFile('avatar')) {
+                    $path = $request->file('avatar')->store('avatar');
+                    $userData['avatar'] = $path; 
+                }
+
                 $user->update($userData);
             }
 
