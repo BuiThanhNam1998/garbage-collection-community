@@ -9,8 +9,9 @@ class GarbagePost extends Model
 {
     protected $fillable = [
         'description',
-        'locationable_id',
-        'locationable_type',
+        'street_id',
+        'latitude',
+        'longitude',
         'date',
         'user_id',
         'verification_status',
@@ -34,9 +35,9 @@ class GarbagePost extends Model
         return $this->morphMany(Report::class, 'reportable');
     }
 
-    public function locationable()
+    public function street()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Street::class);
     }
 
     public function moderationQueue()

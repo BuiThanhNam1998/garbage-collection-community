@@ -28,7 +28,6 @@ class GetFavoritePostsController extends Controller
                 ->get();
 
             return response()->json([
-                'message' => 'Post has been removed from favorites list',
                 'favoritePosts' => $favoritePosts
             ], 201);
         } catch (\Exception $e) {

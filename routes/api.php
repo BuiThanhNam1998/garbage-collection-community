@@ -57,6 +57,7 @@ use App\Http\Controllers\Admins\ModerationQueue\RemoveFromModerationQueueControl
 use App\Http\Controllers\Admins\AiPostQueue\GetAiPostQueueController;
 use App\Http\Controllers\Admins\AiPostQueue\AddToAiPostQueueController;
 use App\Http\Controllers\Admins\AiLogs\GetAiLogsController;
+use App\Http\Controllers\Admins\GeolocationHeatmap\GenerateHeatmapController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,7 +77,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::namespace('Users')->group(function () {
     Route::namespace('Auth')->group(function () {
         Route::post('/login', [LoginController::class, 'login']);
-        Route::post('/logout', 'AuthController@logout')->middleware('auth:api');
+        Route::post('/logout', [LogoutController::class,'logout'])->middleware('auth:api');
         Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword']);
 
         Route::namespace('Google')->group(function () {
@@ -86,10 +87,10 @@ Route::namespace('Users')->group(function () {
             });
         });
     });
-    Route::prefix('user')->middleware('auth:api')->group(function () {
-        Route::namespace('Profile')->group(function() {
+    Route::prefix('users')->middleware('auth:api')->group(function () {
+        Route::prefix('profile')->namespace('Profile')->group(function() {
             Route::get('/', [GetUserInfoController::class, 'view']);
-            Route::put('/', [UpdateUserController::class, 'update']);
+            Route::post('/', [UpdateUserController::class, 'update']);
             Route::post('/update-password', [UpdatePasswordController::class, 'update']);
         });
         Route::prefix('garbage-posts')->namespace('GarbagePosts')->group(function() {
@@ -202,6 +203,9 @@ Route::prefix('admins')->namespace('Admins')->group(function() {
         });
         Route::prefix('ai-logs')->namespace('AiLogs')->group(function() {
             Route::get('/', [GetAiLogsController::class, 'index']);
+        });
+        Route::prefix('geolocation-heatmap')->namespace('GeolocationHeatmap')->group(function() {
+            Route::get('/', [GenerateHeatmapController::class, 'index']);
         });
     });
 });
