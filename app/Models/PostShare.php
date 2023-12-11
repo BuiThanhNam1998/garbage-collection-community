@@ -4,14 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserActivityLog extends Model
+class PostShare extends Model
 {
     protected $fillable = [
+        'garbage_post_id',
         'user_id',
-        'activity',
-        'description',
-        'ip_address',
-        'user_agent',
     ];
 
     public function user()
@@ -19,7 +16,8 @@ class UserActivityLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function loggable() {
-        return $this->morphTo();
+    public function garbagePost()
+    {
+        return $this->belongsTo(GarbagePost::class);
     }
 }

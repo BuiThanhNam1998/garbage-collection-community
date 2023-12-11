@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Users\GarbagePosts;
 
+use App\Enums\UserActivityLog\Activity;
 use App\Http\Controllers\Controller;
 use App\Repositories\GarbagePostRepository;
 use App\Repositories\GarbagePostImageRepository;
@@ -37,6 +38,11 @@ class DeleteGarbagePostController extends Controller
 
             $this->garbagePostImageRepository->deleteByCondition([
                 ['garbage_post_id', '=', $garbagePostId],
+            ]);
+
+            $garbagePost->userActivityLogs()->create([
+                'user_id' => $user->id, 
+                'activity' => Activity::DELETE_POST,
             ]);
 
             $this->garbagePostRepository->delete($garbagePostId);

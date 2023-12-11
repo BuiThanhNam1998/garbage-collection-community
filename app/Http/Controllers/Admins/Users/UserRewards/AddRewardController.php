@@ -42,7 +42,7 @@ class AddRewardController extends Controller
 
             return response()->json([
                 'message' => 'User reward created successfully',
-                'createdUserReward' => $createdUserReward,
+                'userReward' => $createdUserReward,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
