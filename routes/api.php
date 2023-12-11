@@ -26,6 +26,9 @@ use App\Http\Controllers\Users\Reports\CreateReportController;
 use App\Http\Controllers\Users\FavoritePosts\AddToFavoritePostController;
 use App\Http\Controllers\Users\FavoritePosts\RemoveFromFavoritePostController;
 use App\Http\Controllers\Users\FavoritePosts\GetFavoritePostsController;
+use App\Http\Controllers\Users\PostShares\GetPostSharesController;
+use App\Http\Controllers\Users\PostShares\CreatePostShareController;
+use App\Http\Controllers\Users\PostShares\DeletePostShareController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostListController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostDetailController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostListByLocationController;
@@ -129,6 +132,11 @@ Route::namespace('Users')->group(function () {
             Route::get('/', [GetFavoritePostsController::class, 'index']);
             Route::post('/', [AddToFavoritePostController::class, 'store']);
             Route::delete('/', [RemoveFromFavoritePostController::class, 'destroy']);
+        });
+        Route::prefix('post-shares')->namespace('PostShares')->group(function() {
+            Route::get('/', [GetPostSharesController::class, 'index']);
+            Route::post('/', [CreatePostShareController::class, 'store']);
+            Route::delete('/{postShareId}', [DeletePostShareController::class, 'destroy']);
         });
     });
 });

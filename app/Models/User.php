@@ -74,4 +74,8 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(GarbagePost::class);
     }
+
+    public function sharedPosts() {
+        return $this->belongsToMany(GarbagePost::class, 'post_shares', 'user_id', 'garbage_post_id');
+    }
 }

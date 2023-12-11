@@ -18,6 +18,12 @@ class RemoveFromModerationQueueController extends Controller
     public function destroy(Request $request, $moderationId)
     {
         try {
+            if (!$this->moderationQueueRepository->find($moderationId)) {
+                return response()->json([
+                    'message' => 'The object does not exist in the queue',
+                ], 400);
+            }
+
             $this->moderationQueueRepository->delete($moderationId);
 
             return response()->json([

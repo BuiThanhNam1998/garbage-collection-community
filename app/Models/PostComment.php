@@ -31,4 +31,8 @@ class PostComment extends Model
     {
         return $this->morphOne(ModerationQueue::class, 'moderatable', 'object_type', 'object_id');
     }
+
+    public function userActivityLogs() {
+        return $this->morphMany(UserActivityLog::class, 'loggable');
+    }
 }

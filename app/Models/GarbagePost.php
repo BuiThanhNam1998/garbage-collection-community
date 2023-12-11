@@ -45,6 +45,14 @@ class GarbagePost extends Model
         return $this->morphOne(ModerationQueue::class, 'moderatable', 'object_type', 'object_id');
     }
 
+    public function userActivityLogs() {
+        return $this->morphMany(UserActivityLog::class, 'loggable');
+    }
+
+    public function sharedBy() {
+        return $this->belongsToMany(User::class, 'post_shares', 'garbage_post_id', 'user_id');
+    }
+
     public function scopeApproved($q) 
     {
         return $q->where('verification_status', Status::APPROVED)

@@ -18,7 +18,14 @@ class DeleteFeedbackController extends Controller
     public function destroy(Request $request, $feedbackId)
     {
         try {
+            if (!$this->feedbackRepository->find($feedbackId)) {
+                return response()->json([
+                    'message' => 'Feedback does not exist',
+                ], 400);
+            }
+
             $this->feedbackRepository->delete($feedbackId);
+
 
             return response()->json([
                 'message' => 'Feedback deleted successfully',

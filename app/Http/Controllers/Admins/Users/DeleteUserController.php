@@ -18,6 +18,12 @@ class DeleteUserController extends Controller
     public function destroy($userId)
     {
         try {
+            if (!$this->userRepository->find($userId)) {
+                return response()->json([
+                    'message' => 'User does not exist',
+                ], 400);
+            }
+
             $this->userRepository->delete($userId);
 
             return response()->json([

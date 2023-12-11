@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Users\GarbagePosts;
 
 use App\Enums\User\GarbagePostImage\Type;
+use App\Enums\UserActivityLog\Activity;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Repositories\GarbagePostRepository;
@@ -70,6 +71,12 @@ class CreateGarbagePostController extends Controller
                     $garbagePost->id
                 );
             }
+
+            $garbagePost->userActivityLogs()->create([
+                'user_id' => $user->id, 
+                'activity' => Activity::CREATE_POST,
+            ]);
+
             DB::commit();
 
             return response()->json([
