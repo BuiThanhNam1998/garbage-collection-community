@@ -29,6 +29,12 @@ use App\Http\Controllers\Users\FavoritePosts\GetFavoritePostsController;
 use App\Http\Controllers\Users\PostShares\GetPostSharesController;
 use App\Http\Controllers\Users\PostShares\CreatePostShareController;
 use App\Http\Controllers\Users\PostShares\DeletePostShareController;
+use App\Http\Controllers\Users\Polls\GetPollsController;
+use App\Http\Controllers\Users\Polls\CreatePollController;
+use App\Http\Controllers\Users\Polls\UpdatePollController;
+use App\Http\Controllers\Users\Polls\DeletePollController;
+use App\Http\Controllers\Users\Polls\Options\CreateOptionController;
+use App\Http\Controllers\Users\Polls\Options\DeleteOptionController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostListController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostDetailController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostListByLocationController;
@@ -137,6 +143,18 @@ Route::namespace('Users')->group(function () {
             Route::get('/', [GetPostSharesController::class, 'index']);
             Route::post('/', [CreatePostShareController::class, 'store']);
             Route::delete('/{postShareId}', [DeletePostShareController::class, 'destroy']);
+        });
+
+        Route::prefix('polls')->namespace('Polls')->group(function() {
+            Route::get('/', [GetPollsController::class, 'index']);
+            Route::post('/', [CreatePollController::class, 'store']);
+            Route::post('/{pollId}', [UpdatePollController::class, 'update']);
+            Route::delete('/{pollId}', [DeletePollController::class, 'update']);
+
+            Route::prefix('{pollId}/options')->namespace('Options')->group(function() {
+                Route::post('/', [CreateOptionController::class, 'store']);
+                Route::delete('/{optionId}', [DeleteOptionController::class, 'destroy']);
+            });
         });
     });
 });
