@@ -35,6 +35,8 @@ use App\Http\Controllers\Users\Polls\UpdatePollController;
 use App\Http\Controllers\Users\Polls\DeletePollController;
 use App\Http\Controllers\Users\Polls\Options\CreateOptionController;
 use App\Http\Controllers\Users\Polls\Options\DeleteOptionController;
+use App\Http\Controllers\Users\Votes\AddVoteController;
+use App\Http\Controllers\Users\Votes\RemoteVoteController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostListController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostDetailController;
 use App\Http\Controllers\Public\GarbagePosts\GetPostListByLocationController;
@@ -144,7 +146,6 @@ Route::namespace('Users')->group(function () {
             Route::post('/', [CreatePostShareController::class, 'store']);
             Route::delete('/{postShareId}', [DeletePostShareController::class, 'destroy']);
         });
-
         Route::prefix('polls')->namespace('Polls')->group(function() {
             Route::get('/', [GetPollsController::class, 'index']);
             Route::post('/', [CreatePollController::class, 'store']);
@@ -155,6 +156,10 @@ Route::namespace('Users')->group(function () {
                 Route::post('/', [CreateOptionController::class, 'store']);
                 Route::delete('/{optionId}', [DeleteOptionController::class, 'destroy']);
             });
+        });
+        Route::prefix('votes')->namespace('Votes')->group(function() {
+            Route::post('/', [AddVoteController::class, 'store']);
+            Route::delete('/{voteId}', [RemoteVoteController::class, 'destroy']);
         });
     });
 });

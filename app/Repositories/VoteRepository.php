@@ -10,4 +10,12 @@ class VoteRepository extends BaseRepository
     {
         parent::__construct($model);
     }
+
+    public function queryByUserIdOptionId($userId, $optionId)
+    {
+        return $this->queryByCondition([
+            'user_id' => $userId,
+            'option_id' => $optionId
+        ]);
+    }
 }
