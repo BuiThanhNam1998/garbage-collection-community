@@ -49,6 +49,14 @@ class GarbagePost extends Model
         return $this->morphMany(UserActivityLog::class, 'loggable');
     }
 
+    public function comments() {
+        return $this->morphMany(PostComment::class, 'commentable');
+    }
+
+    public function reactions() {
+        return $this->morphMany(PostReaction::class, 'reactable');
+    }
+
     public function sharedBy() {
         return $this->belongsToMany(User::class, 'post_shares', 'garbage_post_id', 'user_id');
     }
