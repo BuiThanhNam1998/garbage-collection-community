@@ -10,4 +10,9 @@ class PollRepository extends BaseRepository
     {
         parent::__construct($model);
     }
+
+    public function queryPublished()
+    {
+        return $this->model->published();
+    }
 }

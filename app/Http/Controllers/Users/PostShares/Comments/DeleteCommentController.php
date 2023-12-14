@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Users\GarbagePosts\Comments;
+namespace App\Http\Controllers\Users\PostShares\Comments;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\PostCommentRepository;
-use App\Repositories\GarbagePostRepository;
+use App\Repositories\PostShareRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DeleteCommentController extends Controller
 {
     protected $postCommentRepository;
-    protected $garbagePostRepository;
+    protected $postShareRepository;
 
     public function __construct(
-        PostCommentRepository $postCommentRepository,
-        GarbagePostRepository $garbagePostRepository,
+        PostCommentRepository $postCommentRepository, 
+        PostShareRepository $postShareRepository
     ) {
         $this->postCommentRepository = $postCommentRepository;
-        $this->garbagePostRepository = $garbagePostRepository;
+        $this->postShareRepository = $postShareRepository;
     }
 
-    public function destroy($garbagePostId, $commentId)
+    public function destroy($postShareId, $commentId)
     {
         $user = Auth::user(); 
 
@@ -29,7 +29,6 @@ class DeleteCommentController extends Controller
             DB::beginTransaction();
 
             $comment = $this->postCommentRepository->find($commentId);
-
             if (!$comment) {
                 return response()->json([
                     'message' => 'Comment does not exist',
@@ -42,7 +41,7 @@ class DeleteCommentController extends Controller
                 ], 403);
             }
 
-            $post = $this->garbagePostRepository->find($garbagePostId);
+            $post = $this->postShareRepository->find($postShareId);
             if (!$post) {
                 return response()->json([
                     'message' => 'Post does not exist',
@@ -65,7 +64,7 @@ class DeleteCommentController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'message' => 'Failed to delete comment',
             ], 500);

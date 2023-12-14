@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Users\GarbagePosts\Reactions;
+namespace App\Http\Controllers\Users\PostShares\Reactions;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\GarbagePostRepository;
+use App\Repositories\PostShareRepository;
 use App\Repositories\ReactionTypeRepository;
 use App\Services\Reactions\ReactionService;
 use Illuminate\Http\Request;
@@ -12,21 +12,21 @@ use Illuminate\Support\Facades\Validator;
 
 class AddReactionController extends Controller
 {
-    protected $garbagePostRepository;
+    protected $postShareRepository;
     protected $reactionTypeRepository;
     protected $reactionService;
 
     public function __construct(
-        GarbagePostRepository $garbagePostRepository,
+        PostShareRepository $postShareRepository,
         ReactionTypeRepository $reactionTypeRepository,
         ReactionService $reactionService
     ) {
-        $this->garbagePostRepository = $garbagePostRepository;
+        $this->postShareRepository = $postShareRepository;
         $this->reactionTypeRepository = $reactionTypeRepository;
         $this->reactionService = $reactionService;
     }
 
-    public function store(Request $request, $garbagePostId)
+    public function store(Request $request, $postShareId)
     {
 
         try {
@@ -48,7 +48,7 @@ class AddReactionController extends Controller
                 ], 400);
             }
 
-            $post = $this->garbagePostRepository->find($garbagePostId);
+            $post = $this->postShareRepository->find($postShareId);
             if (!$post) {
                 return response()->json([
                     'message' => 'Post does not exist',
@@ -68,7 +68,7 @@ class AddReactionController extends Controller
                 ], 400);
             }
 
-            $createdReaction = $this->reactionService->createReactionForPost($post, $reactionData);
+            $createdReaction = $this->reactionService->createReactionForPostShare($post, $reactionData);
 
             return response()->json([
                 'message' => 'Reaction added successfully',
