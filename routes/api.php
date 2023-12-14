@@ -29,6 +29,10 @@ use App\Http\Controllers\Users\FavoritePosts\GetFavoritePostsController;
 use App\Http\Controllers\Users\PostShares\GetPostSharesController;
 use App\Http\Controllers\Users\PostShares\CreatePostShareController;
 use App\Http\Controllers\Users\PostShares\DeletePostShareController;
+use App\Http\Controllers\Users\PostShares\Comments\CreateCommentController as CreateCommentPostShareController;
+use App\Http\Controllers\Users\PostShares\Comments\DeleteCommentController as DeleteCommentPostShareController;
+use App\Http\Controllers\Users\PostShares\Reactions\AddReactionController as AddReactionPostShareController;
+use App\Http\Controllers\Users\PostShares\Reactions\RemoveReactionController as RemoveReactionPostShareController;
 use App\Http\Controllers\Users\Polls\GetPollsController;
 use App\Http\Controllers\Users\Polls\CreatePollController;
 use App\Http\Controllers\Users\Polls\UpdatePollController;
@@ -46,6 +50,7 @@ use App\Http\Controllers\Public\Events\GetUpcomingEventsController;
 use App\Http\Controllers\Public\Statistics\GetStatisticsController;
 use App\Http\Controllers\Public\News\GetLastedNewsController;
 use App\Http\Controllers\Public\EducationResources\GetListEducationResourceController;
+use App\Http\Controllers\Public\Polls\GetPollsController as GetPublicPollsController;
 use App\Http\Controllers\Admins\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admins\Users\GetUsersController;
 use App\Http\Controllers\Admins\Users\GetUserDetailController;
@@ -145,6 +150,18 @@ Route::namespace('Users')->group(function () {
             Route::get('/', [GetPostSharesController::class, 'index']);
             Route::post('/', [CreatePostShareController::class, 'store']);
             Route::delete('/{postShareId}', [DeletePostShareController::class, 'destroy']);
+
+            Route::prefix('{postShareId}')->group(function () {
+                Route::prefix('comments')->namespace('Comments')->group(function () {
+                    Route::post('/', [CreateCommentPostShareController::class, 'store']);
+                    Route::delete('/{commentId}', [DeleteCommentPostShareController::class, 'destroy']);
+                });
+
+                Route::prefix('reactions')->namespace('Reactions')->group(function () {
+                    Route::post('/', [AddReactionPostShareController::class, 'store']);
+                    Route::delete('/{reactionId}', [RemoveReactionPostShareController::class, 'destroy']);
+                });
+            });
         });
         Route::prefix('polls')->namespace('Polls')->group(function() {
             Route::get('/', [GetPollsController::class, 'index']);
@@ -185,6 +202,9 @@ Route::namespace('Public')->group(function() {
     });
     Route::prefix('education-resources')->namespace('EducationResources')->group(function() {
         Route::get('/', [GetListEducationResourceController::class, 'index']);
+    });
+    Route::prefix('polls')->namespace('Polls')->group(function() {
+        Route::get('/', [GetPublicPollsController::class, 'index']);
     });
 });
 

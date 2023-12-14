@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Users\GarbagePosts\Reactions;
+namespace App\Http\Controllers\Users\PostShares\Reactions;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\PostReactionRepository;
-use App\Repositories\GarbagePostRepository;
+use App\Repositories\PostShareRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class RemoveReactionController extends Controller
 {
     protected $postReactionRepository;
-    protected $garbagePostRepository;
+    protected $postShareRepository;
 
     public function __construct(
         PostReactionRepository $postReactionRepository,
-        GarbagePostRepository $garbagePostRepository
+        PostShareRepository $postShareRepository, 
     ) {
         $this->postReactionRepository = $postReactionRepository;
-        $this->garbagePostRepository = $garbagePostRepository;
+        $this->postShareRepository = $postShareRepository;
     }
 
-    public function destroy(Request $request, $garbagePostId, $reactionId)
+    public function destroy(Request $request, $postShare, $reactionId)
     {
         $user = Auth::user(); 
 
@@ -34,7 +34,7 @@ class RemoveReactionController extends Controller
                 ], 404);
             }
 
-            $post = $this->garbagePostRepository->find($garbagePostId);
+            $post = $this->postShareRepository->find($postShare);
             if (!$post) {
                 return response()->json([
                     'message' => 'Post does not exist',

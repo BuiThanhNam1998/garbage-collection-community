@@ -1,18 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Users\Polls;
+namespace App\Http\Controllers\Public\Polls;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\PollRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class GetPollsController extends Controller
 {
+    protected $pollRepository;
+
+    public function __construct(PollRepository $pollRepository)
+    {
+        $this->pollRepository = $pollRepository;
+    }
+
     public function index(Request $request)
     {
         try {
-            $user = Auth::user(); 
-            $polls = $user->polls->load(['options']);
+            $polls = $this->pollRepository->queryPublished()
+                ->with(['options'])
+                ->orderBy('published_at', 'desc')
+                ->get();
 
             return response()->json([
                 'polls' => $polls

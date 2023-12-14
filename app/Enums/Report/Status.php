@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\User\Report;
+namespace App\Enums\Report;
 
 final class Status
 {

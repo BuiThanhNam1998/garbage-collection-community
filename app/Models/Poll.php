@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Poll\Status;
 use Illuminate\Database\Eloquent\Model;
 
 class Poll extends Model
@@ -22,5 +23,10 @@ class Poll extends Model
     public function options()
     {
         return $this->hasMany(PollOption::class);
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', Status::PUBLISHED);
     }
 }

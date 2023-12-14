@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Users\GarbagePosts\Comments;
+namespace App\Http\Controllers\Users\PostShares\Comments;
 
 use App\Http\Controllers\Controller;
 use App\Services\Comments\CommentService;
 use App\Repositories\PostCommentRepository;
-use App\Repositories\GarbagePostRepository;
+use App\Repositories\PostShareRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -13,20 +13,20 @@ use Illuminate\Support\Facades\Validator;
 class CreateCommentController extends Controller
 {
     protected $postCommentRepository;
-    protected $garbagePostRepository;
+    protected $postShareRepository;
     protected $commentService;
 
     public function __construct(
         PostCommentRepository $postCommentRepository, 
-        GarbagePostRepository $garbagePostRepository,
+        PostShareRepository $postShareRepository,
         CommentService $commentService
     ) {
         $this->postCommentRepository = $postCommentRepository;
-        $this->garbagePostRepository = $garbagePostRepository;
+        $this->postShareRepository = $postShareRepository;
         $this->commentService = $commentService;
     }
 
-    public function store(Request $request, $garbagePostId)
+    public function store(Request $request, $postShareId)
     {
         $user = Auth::user(); 
 
@@ -43,7 +43,7 @@ class CreateCommentController extends Controller
                 ], 422);
             }
 
-            $post = $this->garbagePostRepository->find($garbagePostId);
+            $post = $this->postShareRepository->find($postShareId);
             if (!$post) {
                 return response()->json([
                     'message' => 'Post does not exist',
@@ -69,7 +69,7 @@ class CreateCommentController extends Controller
             ]);
             $commentData['user_id'] = $user->id;
 
-            $createdComment = $this->commentService->createCommentForPost($post, $commentData);
+            $createdComment = $this->commentService->createCommentForPostShare($post, $commentData);
 
             return response()->json([
                 'message' => 'Comment created successfully',

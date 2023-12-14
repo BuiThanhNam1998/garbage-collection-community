@@ -42,4 +42,9 @@ class PostComment extends Model
     {
         return $this->morphTo();
     }
+
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id', 'id');
+    }
 }

@@ -20,4 +20,12 @@ class PostShare extends Model
     {
         return $this->belongsTo(GarbagePost::class);
     }
+
+    public function comments() {
+        return $this->morphMany(PostComment::class, 'commentable');
+    }
+
+    public function reactions() {
+        return $this->morphMany(PostReaction::class, 'reactable');
+    }
 }
