@@ -82,4 +82,9 @@ class BaseRepository
     {
         return $this->model->whereIn('id', $ids)->update($data);
     }
+
+    public function insert($data)
+    {
+        return $this->model->insert($data);
+    }
 }
