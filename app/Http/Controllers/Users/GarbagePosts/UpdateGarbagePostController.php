@@ -124,7 +124,7 @@ class UpdateGarbagePostController extends Controller
     {
         if ($images) {
             foreach ($images as $image) {
-                $path = $image->store('garbage_post_images');
+                $path = $image->store('public/garbage_post_images');
 
                 $garbagePostImageData = [
                     'garbage_post_id' => $garbagePostId,

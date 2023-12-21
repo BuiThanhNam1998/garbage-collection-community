@@ -25,7 +25,7 @@ class GetPostListController extends Controller
                 ->when($keyword, function($q) use ($keyword) {
                     $q->where('description', 'like', '%'.$keyword.'%');
                 })
-                ->with('images')
+                ->with(['images', 'user'])
                 ->paginate($perPage);
 
             return response()->json([

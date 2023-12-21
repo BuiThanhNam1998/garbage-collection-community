@@ -74,6 +74,7 @@ use App\Http\Controllers\Admins\AiPostQueue\GetAiPostQueueController;
 use App\Http\Controllers\Admins\AiPostQueue\AddToAiPostQueueController;
 use App\Http\Controllers\Admins\AiLogs\GetAiLogsController;
 use App\Http\Controllers\Admins\GeolocationHeatmap\GenerateHeatmapController;
+use App\Http\Controllers\Admins\HealthChecks\GetHealthChecksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -257,6 +258,9 @@ Route::prefix('admins')->namespace('Admins')->group(function() {
         });
         Route::prefix('geolocation-heatmap')->namespace('GeolocationHeatmap')->group(function() {
             Route::get('/', [GenerateHeatmapController::class, 'index']);
+        });
+        Route::prefix('health-checks')->namespace('HealthChecks')->group(function() {
+            Route::get('/', [GetHealthChecksController::class, 'index']);
         });
     });
 });

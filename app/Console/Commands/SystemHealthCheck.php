@@ -38,13 +38,25 @@ class SystemHealthCheck extends Command
 
     public function handle()
     {
-        $checkDatabaseConnectionData = $this->checkDatabaseConnection();
-        $checkHighCPUUsageData = $this->checkHighCPUUsage();
+        try {
+            DB::beginTransaction(); 
 
-        $this->healthCheckRepository->insert([
-            $checkDatabaseConnectionData,
-            $checkHighCPUUsageData
-        ]);
+            $checkDatabaseConnectionData = $this->checkDatabaseConnection();
+            $checkHighCPUUsageData = $this->checkHighCPUUsage();
+    
+            $healthCheckData = [
+                $checkDatabaseConnectionData,
+                $checkHighCPUUsageData
+            ];
+    
+            foreach($healthCheckData as $healthcheck) {
+                $this->healthCheckRepository->create($healthcheck);
+            };
+    
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
     }
 
     public function checkDatabaseConnection()
