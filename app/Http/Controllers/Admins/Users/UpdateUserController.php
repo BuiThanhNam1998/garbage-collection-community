@@ -38,7 +38,7 @@ class UpdateUserController extends Controller
 
             if (!empty($userData)) {
                 if ($request->hasFile('avatar')) {
-                    $path = $request->file('avatar')->store('avatar');
+                    $path = $request->file('avatar')->store('public/avatar');
                     $userData['avatar'] = $path; 
                 }
 

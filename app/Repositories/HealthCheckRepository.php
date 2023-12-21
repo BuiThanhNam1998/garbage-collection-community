@@ -10,4 +10,9 @@ class HealthCheckRepository extends BaseRepository
     {
         parent::__construct($model);
     }
+
+    public function queryBetweenDate($startDate, $endDate)
+    {
+        return $this->model->whereBetween('checked_at', [$startDate, $endDate]);
+    }
 }
