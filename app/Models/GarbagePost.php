@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ReactionType\Type;
 use App\Enums\User\GarbagePost\Status;
 use Illuminate\Database\Eloquent\Model;
 
@@ -55,6 +56,22 @@ class GarbagePost extends Model
 
     public function reactions() {
         return $this->morphMany(PostReaction::class, 'reactable');
+    }
+
+    public function negativeReactions()
+    {
+        return $this->morphMany(PostReaction::class, 'reactable')
+            ->whereHas('type', function ($q) {
+                $q->where('type', Type::NEGATIVE);
+            });
+    }
+
+    public function positiveReactions()
+    {
+        return $this->morphMany(PostReaction::class, 'reactable')
+            ->whereHas('type', function ($q) {
+                $q->where('type', Type::POSITIVE);
+            });
     }
 
     public function sharedBy() {
