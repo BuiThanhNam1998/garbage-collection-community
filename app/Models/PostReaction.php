@@ -22,4 +22,9 @@ class PostReaction extends Model
     {
         return $this->morphTo();
     }
+
+    public function type()
+    {
+        return $this->belongsTo(ReactionType::class);
+    }
 }
