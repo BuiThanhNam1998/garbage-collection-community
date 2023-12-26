@@ -60,9 +60,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(UserDetail::class);
     }
 
-    public function point()
+    public function points()
     {
-        return $this->hasOne(Point::class);
+        return $this->hasMany(Point::class);
     }
 
     public function userRewards()
