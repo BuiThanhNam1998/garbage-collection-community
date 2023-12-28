@@ -10,4 +10,9 @@ class ReactionTypeRepository extends BaseRepository
     {
         parent::__construct($model);
     }
+
+    public function queryNotChildren()
+    {
+        return $this->model->whereNull('parent_id');
+    }
 }
