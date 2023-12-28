@@ -51,6 +51,7 @@ use App\Http\Controllers\Public\Statistics\GetStatisticsController;
 use App\Http\Controllers\Public\News\GetLastedNewsController;
 use App\Http\Controllers\Public\EducationResources\GetListEducationResourceController;
 use App\Http\Controllers\Public\Polls\GetPollsController as GetPublicPollsController;
+use App\Http\Controllers\Public\ReactionTypes\GetReactionTypesController;
 use App\Http\Controllers\Admins\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admins\Users\GetUsersController;
 use App\Http\Controllers\Admins\Users\GetUserDetailController;
@@ -206,6 +207,9 @@ Route::namespace('Public')->group(function() {
     });
     Route::prefix('polls')->namespace('Polls')->group(function() {
         Route::get('/', [GetPublicPollsController::class, 'index']);
+    });
+    Route::prefix('reaction-types')->namespace('ReactionTypes')->group(function() {
+        Route::get('/', [GetReactionTypesController::class, 'index']);
     });
 });
 
