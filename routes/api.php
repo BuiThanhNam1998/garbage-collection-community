@@ -14,6 +14,7 @@ use App\Http\Controllers\Users\GarbagePosts\UpdateGarbagePostController;
 use App\Http\Controllers\Users\GarbagePosts\DeleteGarbagePostController;
 use App\Http\Controllers\Users\GarbagePosts\DetailGarbagePostController;
 use App\Http\Controllers\Users\GarbagePosts\GetListGarbagePostController;
+use App\Http\Controllers\Users\GarbagePosts\GetReactionsAndCommentController;
 use App\Http\Controllers\Users\GarbagePosts\Comments\CreateCommentController;
 use App\Http\Controllers\Users\GarbagePosts\Comments\DeleteCommentController;
 use App\Http\Controllers\Users\GarbagePosts\Reactions\AddReactionController;
@@ -117,6 +118,7 @@ Route::namespace('Users')->group(function () {
             Route::delete('/{garbagePostId}', [DeleteGarbagePostController::class, 'delete']);
             Route::get('/{garbagePostId}', [DetailGarbagePostController::class, 'show']);
             Route::get('/', [GetListGarbagePostController::class, 'index']);
+            Route::get('/{garbagePostId}/get-reactions-comments', [GetReactionsAndCommentController::class, 'index']);
 
             Route::prefix('{garbagePostId}')->group(function () {
                 Route::prefix('comments')->namespace('Comments')->group(function () {
