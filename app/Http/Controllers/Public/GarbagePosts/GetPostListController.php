@@ -27,6 +27,7 @@ class GetPostListController extends Controller
                 })
                 ->with(['images', 'user', 'comments'])
                 ->withCount(['comments', 'positiveReactions', 'negativeReactions'])
+                ->orderBy('updated_at', 'desc')
                 ->paginate($perPage);
 
             return response()->json([
