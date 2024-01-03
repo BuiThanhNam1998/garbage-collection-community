@@ -8,8 +8,9 @@ class PostReaction extends Model
 {
     protected $fillable = [
         'user_id',
-        'garbage_post_id',
-        'type',
+        'reactable_id',
+        'reactable_type',
+        'type_id',
     ];
 
     public function user()
@@ -17,8 +18,13 @@ class PostReaction extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function garbagePost()
+    public function reactable()
     {
-        return $this->belongsTo(GarbagePost::class);
+        return $this->morphTo();
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(ReactionType::class);
     }
 }

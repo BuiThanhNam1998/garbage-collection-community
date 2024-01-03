@@ -27,7 +27,7 @@ class GetUserProfileController extends Controller
             ]);
 
             return response()->json([
-                'garbagePost' => $user,
+                'user' => $user,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

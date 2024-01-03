@@ -21,6 +21,7 @@ class User extends Authenticatable implements JWTSubject
     protected $fillable = [
         'name',
         'email',
+        'avatar',
         'password',
     ];
 
@@ -59,9 +60,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(UserDetail::class);
     }
 
-    public function point()
+    public function points()
     {
-        return $this->hasOne(Point::class);
+        return $this->hasMany(Point::class);
     }
 
     public function userRewards()
@@ -72,5 +73,19 @@ class User extends Authenticatable implements JWTSubject
     public function garbagePosts()
     {
         return $this->hasMany(GarbagePost::class);
+    }
+
+    public function sharedPosts() {
+        return $this->belongsToMany(GarbagePost::class, 'post_shares', 'user_id', 'garbage_post_id');
+    }
+
+    public function polls()
+    {
+        return $this->hasMany(Poll::class, 'creator_id');
+    }
+
+    public function votes()
+    {
+        return $this->hasMany(Vote::class);
     }
 }

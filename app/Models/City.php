@@ -13,8 +13,8 @@ class City extends Model
         'longitude',
     ];
 
-    public function posts()
+    public function streets()
     {
-        return $this->morphMany(GarbagePost::class, 'locationable');
+        return $this->hasMany(Street::class);
     }
 }

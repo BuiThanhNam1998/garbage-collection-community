@@ -27,6 +27,12 @@ class DetailGarbagePostController extends Controller
         try {
             $garbagePost = $this->garbagePostRepository->find($garbagePostId);
 
+            if (!$garbagePost) {
+                return response()->json([
+                    'message' => 'Post does not exist',
+                ], 400);
+            }
+
             if ($garbagePost->user_id !== $user->id) {
                 return response()->json([
                     'message' => 'You do not have permission to view the details of this post',

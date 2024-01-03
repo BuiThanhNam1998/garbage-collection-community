@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Users\GarbagePosts;
 
+use App\Enums\User\GarbagePostImage\Type;
+use App\Enums\UserActivityLog\Activity;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Repositories\GarbagePostRepository;
 use App\Repositories\GarbagePostImageRepository;
+use App\Repositories\StreetRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -13,14 +16,18 @@ class UpdateGarbagePostController extends Controller
 {
     protected $garbagePostRepository;
     protected $garbagePostImageRepository;
+    protected $streetRepository;
 
     public function __construct(
         GarbagePostRepository $garbagePostRepository,
-        GarbagePostImageRepository $garbagePostImageRepository
+        GarbagePostImageRepository $garbagePostImageRepository,
+        StreetRepository $streetRepository
     ) {
         $this->garbagePostRepository = $garbagePostRepository;
         $this->garbagePostImageRepository = $garbagePostImageRepository;
+        $this->streetRepository = $streetRepository;
     }
+
 
     public function update(Request $request, $garbagePostId)
     {
@@ -28,7 +35,21 @@ class UpdateGarbagePostController extends Controller
 
         try {
             DB::beginTransaction();
-            $garbagePost = $this->garbagePostRepository->findOrFail($garbagePostId);
+            $request->validate([
+                'description' => 'required',
+                'street_id' => 'required|integer',
+                'date' => 'required|date',
+                'before_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
+                'after_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
+            ]);
+
+            $garbagePost = $this->garbagePostRepository->find($garbagePostId);
+
+            if (!$garbagePost) {
+                return response()->json([
+                    'message' => 'Post does not exist',
+                ], 400);
+            }
 
             if ($garbagePost->user_id !== $user->id) {
                 return response()->json([
@@ -36,30 +57,54 @@ class UpdateGarbagePostController extends Controller
                 ], 403);
             }
 
-            $this->garbagePostImageRepository->deleteByCondition([
-                ['garbage_post_id', '=', $garbagePostId],
-            ]);
+            if (!$this->streetRepository->find($request->street_id)) {
+                return response()->json([
+                    'message' => 'Street does not exist',
+                ], 400);
+            }
 
             $garbagePostData = [
                 'description' => $request->description,
-                'locationable_type' => $request->locationable_type,
-                'locationable_id' => $request->locationable_id,
+                'street_id' => $request->street_id,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
                 'date' => $request->date,
             ];
 
             $garbagePost->update($garbagePostData);
 
-            $this->saveImagesAndCreateGarbagePostImages(
-                $request->file('before_images'),
-                'before',
-                $garbagePostId
-            );
+            if ($request->hasFile('before_images')) {
+                $this->saveImagesAndCreateGarbagePostImages(
+                    $request->file('before_images'),
+                    Type::BEFORE,
+                    $garbagePostId
+                );
+                $this->garbagePostImageRepository->deleteByCondition([
+                    'garbage_post_id' => $garbagePostId,
+                    'type' => Type::BEFORE,
+                ]);
+            }
+            
 
-            $this->saveImagesAndCreateGarbagePostImages(
-                $request->file('after_images'),
-                'after',
-                $garbagePostId
-            );
+            if ($request->hasFile('before_images')) {
+                $this->saveImagesAndCreateGarbagePostImages(
+                    $request->file('after_images'),
+                    Type::AFTER,
+                    $garbagePostId
+                );
+                $this->garbagePostImageRepository->deleteByCondition([
+                    'garbage_post_id' => $garbagePostId,
+                    'type' => Type::BEFORE,
+                ]);
+            }
+
+            $garbagePost->userActivityLogs()->create([
+                'user_id' => $user->id, 
+                'activity' => Activity::UPDATE_POST,
+            ]);
+
+            $garbagePost->load(['images']);
+
             DB::commit();
 
             return response()->json([
@@ -79,7 +124,7 @@ class UpdateGarbagePostController extends Controller
     {
         if ($images) {
             foreach ($images as $image) {
-                $path = $image->store('garbage_post_images');
+                $path = $image->store('public/garbage_post_images');
 
                 $garbagePostImageData = [
                     'garbage_post_id' => $garbagePostId,

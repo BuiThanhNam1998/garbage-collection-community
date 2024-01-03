@@ -9,7 +9,9 @@ class PostComment extends Model
     protected $fillable = [
         'content',
         'user_id',
-        'garbage_post_id',
+        'commentable_id',
+        'commentable_type',
+        'parent_id',
     ];
 
     public function user()
@@ -25,5 +27,24 @@ class PostComment extends Model
     public function reports()
     {
         return $this->morphMany(Report::class, 'reportable');
+    }
+
+    public function moderationQueue()
+    {
+        return $this->morphOne(ModerationQueue::class, 'moderatable', 'object_type', 'object_id');
+    }
+
+    public function userActivityLogs() {
+        return $this->morphMany(UserActivityLog::class, 'loggable');
+    }
+
+    public function commentable()
+    {
+        return $this->morphTo();
+    }
+
+    public function children()
+    {
+        return $this->hasMany(self::class, 'parent_id', 'id');
     }
 }

@@ -3,48 +3,72 @@
 namespace App\Http\Controllers\Users\GarbagePosts\Reactions;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\PostReactionRepository;
-use App\Enums\User\GarbagePost\Reaction\Type;
+use App\Repositories\GarbagePostRepository;
+use App\Repositories\ReactionTypeRepository;
+use App\Services\Reactions\ReactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class AddReactionController extends Controller
 {
-    protected $postReactionRepository;
+    protected $garbagePostRepository;
+    protected $reactionTypeRepository;
+    protected $reactionService;
 
-    public function __construct(PostReactionRepository $postReactionRepository)
-    {
-        $this->postReactionRepository = $postReactionRepository;
+    public function __construct(
+        GarbagePostRepository $garbagePostRepository,
+        ReactionTypeRepository $reactionTypeRepository,
+        ReactionService $reactionService
+    ) {
+        $this->garbagePostRepository = $garbagePostRepository;
+        $this->reactionTypeRepository = $reactionTypeRepository;
+        $this->reactionService = $reactionService;
     }
 
     public function store(Request $request, $garbagePostId)
     {
-        $user = Auth::user(); 
 
         try {
-            $type = $request->input('type');
+            $validator = Validator::make($request->all(), [
+                'type_id' => 'required|integer',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
 
-            if (!in_array($type, Type::ALL)) {
+            $typeId = $request->input('type_id');
+            if (!$this->reactionTypeRepository->find($typeId)) {
                 return response()->json([
                     'message' => 'This type of reaction does not exist',
                 ], 400);
             }
 
+            $post = $this->garbagePostRepository->find($garbagePostId);
+            if (!$post) {
+                return response()->json([
+                    'message' => 'Post does not exist',
+                ], 400);
+            }
+
+            $user = Auth::user(); 
             $reactionData = [
                 'user_id' => $user->id,
-                'garbage_post_id' => $garbagePostId,
-                'type' => $type,
+                'type_id' => $typeId,
             ];
 
-            $existingReaction = $this->postReactionRepository->queryByCondition($reactionData)->exists();
-
+            $existingReaction = $post->reactions()->where($reactionData)->first();
             if ($existingReaction) {
                 return response()->json([
                     'message' => 'You have already reacted to this post with this type',
                 ], 400);
             }
 
-            $createdReaction = $this->postReactionRepository->create($reactionData);
+            $createdReaction = $this->reactionService->createReactionForPost($post, $reactionData);
 
             return response()->json([
                 'message' => 'Reaction added successfully',

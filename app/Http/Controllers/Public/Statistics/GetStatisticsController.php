@@ -39,11 +39,13 @@ class GetStatisticsController extends Controller
             $lastUser = $this->userRepository->last();
 
             return response()->json([
-                'userCount' => $userCount,
-                'postCount' => $postCount,
-                'countryCount' => $countryCount,
-                'cityCount' => $cityCount,
-                'lastUser' => $lastUser,
+            	'data' => [
+                    'userCount' => $userCount,
+                    'postCount' => $postCount,
+                    'countryCount' => $countryCount,
+                    'cityCount' => $cityCount,
+                    'lastUser' => $lastUser,
+                ]
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

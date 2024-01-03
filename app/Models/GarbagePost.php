@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\ReactionType\Type;
+use App\Enums\User\GarbagePost\Status;
 use Illuminate\Database\Eloquent\Model;
 
 class GarbagePost extends Model
 {
     protected $fillable = [
         'description',
-        'locationable_id',
-        'locationable_type',
+        'street_id',
+        'latitude',
+        'longitude',
         'date',
         'user_id',
         'verification_status',
@@ -33,15 +36,57 @@ class GarbagePost extends Model
         return $this->morphMany(Report::class, 'reportable');
     }
 
-    public function locationable()
+    public function street()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Street::class);
     }
 
+    public function moderationQueue()
+    {
+        return $this->morphOne(ModerationQueue::class, 'moderatable', 'object_type', 'object_id');
+    }
+
+    public function userActivityLogs() {
+        return $this->morphMany(UserActivityLog::class, 'loggable');
+    }
+
+    public function comments() {
+        return $this->morphMany(PostComment::class, 'commentable');
+    }
+
+    public function reactions() {
+        return $this->morphMany(PostReaction::class, 'reactable');
+    }
+
+    public function negativeReactions()
+    {
+        return $this->morphMany(PostReaction::class, 'reactable')
+            ->whereHas('type', function ($q) {
+                $q->where('type', Type::NEGATIVE);
+            });
+    }
+
+    public function positiveReactions()
+    {
+        return $this->morphMany(PostReaction::class, 'reactable')
+            ->whereHas('type', function ($q) {
+                $q->where('type', Type::POSITIVE);
+            });
+    }
+
+    public function sharedBy() {
+        return $this->belongsToMany(User::class, 'post_shares', 'garbage_post_id', 'user_id');
+    }
 
     public function scopeApproved($q) 
     {
-        return $q->where('verification_status', true)
-            ->orWhere('ai_verification_status', true);
+        return $q->where('verification_status', Status::APPROVED)
+            ->orWhere('ai_verification_status', Status::APPROVED);
+    }
+
+    public function scopePending($q) 
+    {
+        return $q->where('verification_status', Status::PENDING)
+            ->where('ai_verification_status', Status::PENDING);
     }
 }
