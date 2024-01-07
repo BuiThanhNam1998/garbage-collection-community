@@ -10,4 +10,9 @@ class CityRepository extends BaseRepository
     {
         parent::__construct($model);
     }
+
+    public function queryByCountryId($countryId)
+    {
+        return $this->model->where('country_id', $countryId);
+    }
 }
