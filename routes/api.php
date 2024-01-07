@@ -53,6 +53,9 @@ use App\Http\Controllers\Public\News\GetLastedNewsController;
 use App\Http\Controllers\Public\EducationResources\GetListEducationResourceController;
 use App\Http\Controllers\Public\Polls\GetPollsController as GetPublicPollsController;
 use App\Http\Controllers\Public\ReactionTypes\GetReactionTypesController;
+use App\Http\Controllers\Public\Countries\GetContriesController;
+use App\Http\Controllers\Public\Cities\GetCitiesController;
+use App\Http\Controllers\Public\Streets\GetStreetsController;
 use App\Http\Controllers\Admins\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admins\Users\GetUsersController;
 use App\Http\Controllers\Admins\Users\GetUserDetailController;
@@ -212,6 +215,15 @@ Route::namespace('Public')->group(function() {
     });
     Route::prefix('reaction-types')->namespace('ReactionTypes')->group(function() {
         Route::get('/', [GetReactionTypesController::class, 'index']);
+    });
+    Route::prefix('countries')->namespace('Countries')->group(function() {
+        Route::get('/', [GetContriesController::class, 'index']);
+    });
+    Route::prefix('cities')->namespace('Cities')->group(function() {
+        Route::get('/', [GetCitiesController::class, 'index']);
+    });
+    Route::prefix('streets')->namespace('Streets')->group(function() {
+        Route::get('/', [GetStreetsController::class, 'index']);
     });
 });
 
