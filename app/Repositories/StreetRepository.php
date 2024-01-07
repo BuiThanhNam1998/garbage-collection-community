@@ -10,4 +10,9 @@ class StreetRepository extends BaseRepository
     {
         parent::__construct($model);
     }
+
+    public function queryByCityId($cityId)
+    {
+        return $this->model->where('city_id', $cityId);
+    }
 }
