@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\Auth\LoginController;
 use App\Http\Controllers\Users\Auth\LogoutController;
 use App\Http\Controllers\Users\Auth\ResetPasswordController;
+use App\Http\Controllers\Users\Auth\RegisterController;
 use App\Http\Controllers\Users\Auth\Google\LoginController as GoogleLoginController;
 use App\Http\Controllers\Users\Profile\GetUserInfoController;
 use App\Http\Controllers\Users\Profile\UpdateUserController;
@@ -100,6 +101,7 @@ Route::namespace('Users')->group(function () {
     Route::namespace('Auth')->group(function () {
         Route::post('/login', [LoginController::class, 'login']);
         Route::post('/logout', [LogoutController::class,'logout'])->middleware('auth:api');
+        Route::post('/register', [RegisterController::class,'register']);
         Route::post('/password/reset', [ResetPasswordController::class, 'resetPassword']);
 
         Route::namespace('Google')->group(function () {
