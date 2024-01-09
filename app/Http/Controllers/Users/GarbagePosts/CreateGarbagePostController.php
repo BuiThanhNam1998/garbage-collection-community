@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Users\GarbagePosts;
 use App\Enums\User\GarbagePostImage\Type;
 use App\Enums\UserActivityLog\Activity;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Repositories\GarbagePostRepository;
 use App\Repositories\GarbagePostImageRepository;
 use App\Repositories\StreetRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class CreateGarbagePostController extends Controller
 {
@@ -31,13 +32,21 @@ class CreateGarbagePostController extends Controller
     {
         try {
             DB::beginTransaction();
-            $request->validate([
+
+            $validator = Validator::make($request->all(), [
                 'description' => 'required',
                 'street_id' => 'required|integer',
                 'date' => 'required|date',
                 'before_images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
                 'after_images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', 
             ]);
+    
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
 
             $user = $request->user(); 
 

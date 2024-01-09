@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class UpdateUserController extends Controller
 {
@@ -20,10 +21,17 @@ class UpdateUserController extends Controller
     {
         $userId = $request->user()->id; 
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'email',
             'avatar' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         $userData = $request->only(['name', 'email']);
 

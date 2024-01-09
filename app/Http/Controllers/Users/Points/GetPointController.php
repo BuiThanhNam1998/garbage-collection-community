@@ -25,22 +25,20 @@ class GetPointController extends Controller
         $userId = $request->user()->id;
 
         try {
-            $point = $this->pointRepository->queryByCondition([
-                'user_id' => $userId
-            ])->first();
+            $points = $this->pointRepository->getTotalPointByUserId($userId);
 
             $rewards = $this->userRewardRepository->queryByCondition([
                 'user_id' => $userId
             ])->get();
 
             return response()->json([
-                'point' => $point ?? null,
+                'point' => $points ? $points->total_points : null,
                 'rewards' => $rewards,
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to retrieve user point',
+                'message' => 'Failed to retrieve user points',
             ], 500);
         }
     }
