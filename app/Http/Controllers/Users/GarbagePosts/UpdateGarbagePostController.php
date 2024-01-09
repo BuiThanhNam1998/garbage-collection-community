@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Users\GarbagePosts;
 use App\Enums\User\GarbagePostImage\Type;
 use App\Enums\UserActivityLog\Activity;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Repositories\GarbagePostRepository;
 use App\Repositories\GarbagePostImageRepository;
 use App\Repositories\StreetRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class UpdateGarbagePostController extends Controller
 {
@@ -35,13 +36,21 @@ class UpdateGarbagePostController extends Controller
 
         try {
             DB::beginTransaction();
-            $request->validate([
+
+            $validator = Validator::make($request->all(), [
                 'description' => 'required',
                 'street_id' => 'required|integer',
                 'date' => 'required|date',
-                'before_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
-                'after_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048', 
+                'before_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+                'after_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Validation error',
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
 
             $garbagePost = $this->garbagePostRepository->find($garbagePostId);
 
@@ -84,7 +93,7 @@ class UpdateGarbagePostController extends Controller
                     'type' => Type::BEFORE,
                 ]);
             }
-            
+
 
             if ($request->hasFile('before_images')) {
                 $this->saveImagesAndCreateGarbagePostImages(
@@ -99,7 +108,7 @@ class UpdateGarbagePostController extends Controller
             }
 
             $garbagePost->userActivityLogs()->create([
-                'user_id' => $user->id, 
+                'user_id' => $user->id,
                 'activity' => Activity::UPDATE_POST,
             ]);
 
