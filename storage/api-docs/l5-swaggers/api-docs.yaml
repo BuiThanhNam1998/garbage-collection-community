@@ -19,6 +19,200 @@ paths:
           description: Pagination list of public posts
         '500': 
           description: Failed to fetch garbage posts
+  /api/garbage-posts/{garbagePostId}:
+    get:
+      tags:
+        - public
+      summary: Retrieve details of a garbage post
+      description: Get detailed information of a garbage post identified by the provided garbagePostId.
+      parameters:
+        - name: garbagePostId
+          in: path
+          description: ID of the garbage post to retrieve details for.
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful operation, returns detailed information of the garbage post.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  garbagePost:
+                    type: object
+                    description: Details of the garbage post.
+                    properties:
+                      id:
+                        type: integer
+                        description: ID of the garbage post.
+        '403':
+          description: Permission denied to view details of the garbage post.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+        '500':
+          description: Internal server error, unable to retrieve details of the garbage post.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.        
+  /api/garbage-posts/{locationType}/{locationId}:
+    get:
+      tags:
+        - public
+      summary: Retrieve garbage posts based on location
+      description: 
+        Retrieve garbage posts based on the provided location type and location ID.
+        Possible location types are 'country', 'city', and 'street'.
+      parameters:
+        - name: locationType
+          in: path
+          description: Type of the location ('country', 'city', or 'street').
+          required: true
+          type: string
+          enum: ['country', 'city', 'street']
+        - name: locationId
+          in: path
+          description: ID of the specific location.
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful operation, returns garbage posts based on the location.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  garbagePosts:
+                    type: array
+                    description: List of garbage posts.
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: ID of the garbage post.
+        '400':
+          description: The location type does not exist or the provided location does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+        '500':
+          description: Internal server error, unable to fetch garbage posts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  /api/users/leaderboard:
+    get:
+      summary: Retrieve user leaderboard
+      description: Retrieve the leaderboard of users based on the provided start and end dates.
+      tags:
+        - public
+      parameters:
+        - name: start_date
+          in: query
+          description: Start date for the leaderboard (optional).
+          required: false
+          type: string
+          format: date
+        - name: end_date
+          in: query
+          description: End date for the leaderboard (optional).
+          required: false
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Successful operation, returns the user leaderboard.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  leaderboard:
+                    type: array
+                    description: List of users on the leaderboard.
+                    items:
+                      type: object
+                      properties:
+        '422':
+          description: Validation error in the request parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+                  errors:
+                    type: object
+                    description: Validation errors details.
+        '500':
+          description: Internal server error, unable to fetch the user leaderboard.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  apis/users/{userId}:
+    get:
+      summary: Retrieve user profile
+      description: Retrieve the profile of a user based on the provided user ID.
+      tags:
+        - public
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user to retrieve the profile for.
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Successful operation, returns the user profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    description: User profile details.
+                    properties:
+        '500':
+          description: Internal server error, unable to retrieve user profile.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
   /api/login:
     post:
       tags:
