@@ -15,9 +15,9 @@ paths:
           type: string
           description: key word for search post by description
       responses:
-        '200':
+        "200":
           description: Pagination list of public posts
-        '500': 
+        "500":
           description: Failed to fetch garbage posts
   /api/garbage-posts/{garbagePostId}:
     get:
@@ -32,7 +32,7 @@ paths:
           required: true
           type: integer
       responses:
-        '200':
+        "200":
           description: Successful operation, returns detailed information of the garbage post.
           content:
             application/json:
@@ -46,7 +46,7 @@ paths:
                       id:
                         type: integer
                         description: ID of the garbage post.
-        '403':
+        "403":
           description: Permission denied to view details of the garbage post.
           content:
             application/json:
@@ -56,7 +56,7 @@ paths:
                   message:
                     type: string
                     description: Error message.
-        '500':
+        "500":
           description: Internal server error, unable to retrieve details of the garbage post.
           content:
             application/json:
@@ -65,13 +65,13 @@ paths:
                 properties:
                   message:
                     type: string
-                    description: Internal server error message.        
+                    description: Internal server error message.
   /api/garbage-posts/{locationType}/{locationId}:
     get:
       tags:
         - public
       summary: Retrieve garbage posts based on location
-      description: 
+      description:
         Retrieve garbage posts based on the provided location type and location ID.
         Possible location types are 'country', 'city', and 'street'.
       parameters:
@@ -80,14 +80,14 @@ paths:
           description: Type of the location ('country', 'city', or 'street').
           required: true
           type: string
-          enum: ['country', 'city', 'street']
+          enum: ["country", "city", "street"]
         - name: locationId
           in: path
           description: ID of the specific location.
           required: true
           type: integer
       responses:
-        '200':
+        "200":
           description: Successful operation, returns garbage posts based on the location.
           content:
             application/json:
@@ -103,7 +103,7 @@ paths:
                         id:
                           type: integer
                           description: ID of the garbage post.
-        '400':
+        "400":
           description: The location type does not exist or the provided location does not exist.
           content:
             application/json:
@@ -113,7 +113,7 @@ paths:
                   message:
                     type: string
                     description: Error message.
-        '500':
+        "500":
           description: Internal server error, unable to fetch garbage posts.
           content:
             application/json:
@@ -143,7 +143,7 @@ paths:
           type: string
           format: date
       responses:
-        '200':
+        "200":
           description: Successful operation, returns the user leaderboard.
           content:
             application/json:
@@ -156,7 +156,7 @@ paths:
                     items:
                       type: object
                       properties:
-        '422':
+        "422":
           description: Validation error in the request parameters.
           content:
             application/json:
@@ -169,7 +169,7 @@ paths:
                   errors:
                     type: object
                     description: Validation errors details.
-        '500':
+        "500":
           description: Internal server error, unable to fetch the user leaderboard.
           content:
             application/json:
@@ -179,7 +179,7 @@ paths:
                   message:
                     type: string
                     description: Internal server error message.
-  apis/users/{userId}:
+  apis/users/profiles/{userId}:
     get:
       summary: Retrieve user profile
       description: Retrieve the profile of a user based on the provided user ID.
@@ -192,7 +192,7 @@ paths:
           required: true
           type: integer
       responses:
-        '200':
+        "200":
           description: Successful operation, returns the user profile.
           content:
             application/json:
@@ -203,7 +203,7 @@ paths:
                     type: object
                     description: User profile details.
                     properties:
-        '500':
+        "500":
           description: Internal server error, unable to retrieve user profile.
           content:
             application/json:
@@ -213,6 +213,338 @@ paths:
                   message:
                     type: string
                     description: Internal server error message.
+  /api/events/upcoming:
+    get:
+      summary: Retrieve a list of events
+      description: Retrieve a list of events within a default time range.
+      tags:
+        - public
+      responses:
+        "200":
+          description: Successful operation, returns the list of events.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    description: List of events.
+                    items:
+                      type: object
+                      properties:
+        "500":
+          description: Internal server error, unable to fetch the event list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  /api/education-resources:
+    get:
+      summary: Retrieve a list of education resources
+      description: Retrieve a list of active education resources.
+      tags:
+        - public
+      responses:
+        "200":
+          description: Successful operation, returns the list of education resources.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resource:
+                    type: array
+                    description: List of education resources.
+                    items:
+                      type: object
+                      properties:
+        "500":
+          description: Internal server error, unable to fetch the education resource list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  /api/news:
+    get:
+      summary: Retrieve a list of lasted news
+      description: Retrieve a list of the latest news articles with their categories.
+      tags:
+        - public
+      responses:
+        "200":
+          description: Successful operation, returns the list of lasted news.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  news:
+                    type: array
+                    description: List of lasted news articles.
+                    items:
+                      type: object
+                      properties:
+                        category:
+                          type: object
+                          description: News category details.
+                          properties:
+        "500":
+          description: Internal server error, unable to fetch the lasted news list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  /api/polls:
+    get:
+      summary: Retrieve a list of published polls
+      description: Retrieve a list of published polls along with their options.
+      tags:
+        - public
+      responses:
+        "200":
+          description: Successful operation, returns the list of published polls.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  polls:
+                    type: array
+                    description: List of published polls.
+                    items:
+                      type: object
+                      properties:
+                        options:
+                          type: array
+                          description: List of options for the poll.
+                          items:
+                            type: object
+                            properties:
+        "500":
+          description: Internal server error, unable to fetch the published polls list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  /api/countries:
+    get:
+      summary: Retrieve a list of countries
+      description: Retrieve a list of countries sorted by name.
+      tags:
+        - public
+      responses:
+        "200":
+          description: Successful operation, returns the list of countries.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  countries:
+                    type: array
+                    description: List of countries.
+                    items:
+                      type: object
+                      properties:
+        "500":
+          description: Internal server error, unable to fetch the country list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  /api/cities:
+    get:
+      summary: Retrieve a list of cities by country
+      description: Retrieve a list of cities for a specific country, sorted by name.
+      tags:
+        - public
+      parameters:
+        - name: country_id
+          in: query
+          description: ID of the country for which to retrieve the list of cities.
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Successful operation, returns the list of cities for the specified country.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cities:
+                    type: array
+                    description: List of cities.
+                    items:
+                      type: object
+                      properties:
+        "400":
+          description: Bad request, country does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+        "500":
+          description: Internal server error, unable to fetch the city list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  /api/streets:
+    get:
+      summary: Retrieve a list of streets by city
+      description: Retrieve a list of streets for a specific city, sorted by name.
+      tags:
+        - public
+      parameters:
+        - name: city_id
+          in: query
+          description: ID of the city for which to retrieve the list of streets.
+          required: true
+          type: integer
+      responses:
+        "200":
+          description: Successful operation, returns the list of streets for the specified city.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  streets:
+                    type: array
+                    description: List of streets.
+                    items:
+                      type: object
+                      properties:
+        "400":
+          description: Bad request, city does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message.
+        "500":
+          description: Internal server error, unable to fetch the street list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  /api/statistics:
+    get:
+      summary: Retrieve statistics data for chart display
+      description: Retrieve statistics data to be used for displaying charts.
+      tags:
+        - public
+      responses:
+        "200":
+          description: Successful operation, returns the statistics data for chart display.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    description: Statistics data.
+                    properties:
+                      userCount:
+                        type: integer
+                        description: Total number of users.
+                      postCount:
+                        type: integer
+                        description: Total number of approved posts.
+                      countryCount:
+                        type: integer
+                        description: Total number of countries.
+                      cityCount:
+                        type: integer
+                        description: Total number of cities.
+                      lastUser:
+                        type: object
+                        description: Details of the last registered user.
+        "500":
+          description: Internal server error, failed to retrieve chart data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+  /api/reaction-types:
+    get:
+      summary: Retrieve a list of reaction types
+      description: Retrieve a list of reaction types, excluding their children.
+      tags:
+        - public
+      responses:
+        "201":
+          description: Successful operation, returns the list of reaction types.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  types:
+                    type: array
+                    description: List of reaction types.
+                    items:
+                      type: object
+                      properties:
+                        children:
+                          type: array
+                          description: List of child reaction types.
+                          items:
+                            type: object
+                            properties:
+        "500":
+          description: Internal server error, unable to fetch reaction types.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+
   /api/login:
     post:
       tags:
@@ -234,7 +566,7 @@ paths:
                   format: password
                   description: user password
       responses:
-        '200':
+        "200":
           description: Login success
           content:
             application/json:
@@ -244,5 +576,286 @@ paths:
                   token:
                     type: string
                     description: JWT token for authentication
-        '401':
+        "401":
           description: Login failed, wrong login information
+  /api/logout:
+    post:
+      summary: Logout the user
+      description: Logout the currently authenticated user.
+      tags:
+        - users
+      security:
+        - jwtAuth: []
+      responses:
+        "200":
+          description: Successful operation, user successfully logged out.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Logout success message.
+        "401":
+          description: Unauthorized, user not authenticated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating unauthorized access.
+        "500":
+          description: Internal server error, failed to logout user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+
+  /api/register:
+    post:
+      tags:
+        - users
+      summary: Register a new user
+      description: Register a new user with the provided information.
+      operationId: registerUser
+      requestBody:
+        description: Create a new user
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: User's name.
+                email:
+                  type: string
+                  format: email
+                  description: User's email address.
+                password:
+                  type: string
+                  description: User's password.
+                password_confirmation:
+                  type: string
+                  description: Confirmation of the user's password.
+              required:
+                - name
+                - email
+                - password
+                - password_confirmation
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: User's name.
+                email:
+                  type: string
+                  format: email
+                  description: User's email address.
+                password:
+                  type: string
+                  description: User's password.
+                password_confirmation:
+                  type: string
+                  description: Confirmation of the user's password.
+              required:
+                - name
+                - email
+                - password
+                - password_confirmation
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Registration success message.
+        "422":
+          description: Unprocessable Entity, validation error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating validation failure.
+                  errors:
+                    type: object
+                    description: Validation errors details.
+        "500":
+          description: Internal server error, failed to register user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Internal server error message.
+
+  /users/reset-password:
+    post:
+      tags:
+        - users
+      summary: Reset user password
+      description: Reset user password with the provided email and new password.
+      operationId: resetUserPassword
+      requestBody:
+        description: Reset user password request
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: User's email address for password reset.
+                password:
+                  type: string
+                  description: User's new password.
+                password_confirmation:
+                  type: string
+                  description: Confirmation of the user's new password.
+              required:
+                - email
+                - password
+                - password_confirmation
+        required: true
+      responses:
+        "200":
+          description: Reset link sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Reset link sent successfully message.
+        "400":
+          description: Bad request or error in sending reset link
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating failure in sending reset link.
+        "422":
+          description: Unprocessable Entity, validation error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating validation failure.
+                  errors:
+                    type: object
+                    description: Validation errors details.
+
+  /api/users/garbage-posts:
+    get:
+      tags:
+        - users
+      summary: Get garbage posts for the authenticated user
+      description: Retrieve garbage posts for the authenticated user.
+      operationId: getUserGarbagePosts
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  garbagePosts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GarbagePost"
+        "500":
+          description: Internal server error, failed to retrieve post list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
+
+  /api/users/garbage-posts/{garbagePostId}:
+    get:
+      tags:
+        - users
+      summary: Get details of a garbage post for the authenticated user
+      description: Retrieve details of a garbage post for the authenticated user.
+      operationId: getUserGarbagePostDetails
+      parameters:
+        - name: garbagePostId
+          in: path
+          description: ID of the garbage post to retrieve details.
+          required: true
+          type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  garbagePost:
+                    $ref: '#/components/schemas/GarbagePost'
+        '400':
+          description: Bad request, post does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating post does not exist.
+        '403':
+          description: Forbidden, user does not have permission.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating user does not have permission.
+        '500':
+          description: Internal server error, failed to retrieve post details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
