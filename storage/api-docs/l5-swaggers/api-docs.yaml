@@ -803,6 +803,91 @@ paths:
                   message:
                     type: string
                     description: Error message indicating internal server error.
+    post:
+      tags:
+        - users
+      summary: Create a new garbage post for the authenticated user
+      description: Create a new garbage post with the provided information for the authenticated user.
+      operationId: createGarbagePost
+      requestBody:
+        description: New garbage post data
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: Description of the garbage post.
+                street_id:
+                  type: integer
+                  description: ID of the street where the garbage post is located.
+                date:
+                  type: string
+                  format: date
+                  description: Date of the garbage post.
+                latitude:
+                  type: string
+                  description: Latitude of the garbage post location.
+                longitude:
+                  type: string
+                  description: Longitude of the garbage post location.
+                before_images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Array of before images for the garbage post.
+                after_images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Array of after images for the garbage post.
+              required:
+                - description
+                - street_id
+                - date
+                - before_images
+                - after_images
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Successful operation, garbage post created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Garbage post created successfully message.
+                  garbagePost:
+                    type: object
+        '400':
+          description: Bad request, validation error or street does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating validation failure or street does not exist.
+                  errors:
+                    type: object
+                    description: Validation errors details.
+        '500':
+          description: Internal server error, failed to create garbage post.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
 
   /api/users/garbage-posts/{garbagePostId}:
     get:
@@ -828,7 +913,7 @@ paths:
                 type: object
                 properties:
                   garbagePost:
-                    $ref: '#/components/schemas/GarbagePost'
+                    type: object
         '400':
           description: Bad request, post does not exist.
           content:
@@ -859,3 +944,976 @@ paths:
                   message:
                     type: string
                     description: Error message indicating internal server error.
+    post:
+      tags:
+        - users
+      summary: Update details of a garbage post for the authenticated user
+      description: Update details of a garbage post for the authenticated user.
+      operationId: updateUserGarbagePost
+      parameters:
+        - name: garbagePostId
+          in: path
+          description: ID of the garbage post to update.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Updated garbage post data
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: Description of the garbage post.
+                street_id:
+                  type: integer
+                  description: ID of the street where the garbage post is located.
+                date:
+                  type: string
+                  format: date
+                  description: Date of the garbage post.
+                latitude:
+                  type: string
+                  description: Latitude of the garbage post location.
+                longitude:
+                  type: string
+                  description: Longitude of the garbage post location.
+                before_images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Array of before images for the garbage post.
+                after_images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: Array of after images for the garbage post.
+              required:
+                - description
+                - street_id
+                - date
+                - before_images
+                - after_images
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful operation, garbage post updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Garbage post updated successfully message.
+                  garbagePost:
+                    type: object
+        '400':
+          description: Bad request, validation error or post does not exist or street does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating validation failure or post does not exist or street does not exist.
+                  errors:
+                    type: object
+                    description: Validation errors details.
+        '403':
+          description: Forbidden, user does not have permission.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating user does not have permission.
+        '500':
+          description: Internal server error, failed to update post.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
+    delete:
+      tags:
+        - users
+      summary: Delete a garbage post for the authenticated user
+      description: Delete a garbage post for the authenticated user.
+      operationId: deleteUserGarbagePost
+      parameters:
+        - name: garbagePostId
+          in: path
+          description: ID of the garbage post to delete.
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful operation, garbage post deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Garbage post deleted successfully message.
+        '403':
+          description: Forbidden, user does not have permission.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating user does not have permission.
+        '500':
+          description: Internal server error, failed to delete post.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
+
+  /api/users/garbage-posts/{garbagePostId}/get-reactions-comments:
+    get:
+      tags:
+        - users
+      summary: Get reactions and comments for a garbage post
+      description: Get reactions and comments for a garbage post for the authenticated user.
+      operationId: getUserGarbagePostReactionsAndComments
+      parameters:
+        - name: garbagePostId
+          in: path
+          description: ID of the garbage post to retrieve reactions and comments.
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful operation, reactions and comments retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ID of the garbage post.
+                  reactions:
+                    type: array
+                    items:
+                      type: object
+                    description: Array of reactions for the garbage post.
+                  comments:
+                    type: array
+                    items:
+                      type: object
+                    description: Array of comments for the garbage post.
+        '400':
+          description: Bad request, post does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating post does not exist.
+        '500':
+          description: Internal server error, failed to retrieve reactions and comments.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
+  
+  /api/users/garbage-posts/{garbagePostId}/comments:
+    post:
+      tags:
+        - users
+      summary: Add a comment to a garbage post
+      description: Add a comment to a garbage post for the authenticated user.
+      operationId: addCommentToGarbagePost
+      parameters:
+        - name: garbagePostId
+          in: path
+          description: ID of the garbage post to add a comment.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Comment data to be added to the garbage post.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Content of the comment.
+                parent_id:
+                  type: integer
+                  nullable: true
+                  description: ID of the parent comment if it's a reply to another comment.
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Comment created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating comment creation.
+                  comment:
+                    type: object
+        '400':
+          description: Bad request, post or parent comment does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating post or parent comment does not exist.
+        '500':
+          description: Internal server error, failed to create comment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
+    delete:
+      tags:
+        - users
+      summary: Delete a comment on a garbage post
+      description: Delete a comment on a garbage post for the authenticated user.
+      operationId: deleteCommentOnGarbagePost
+      parameters:
+        - name: garbagePostId
+          in: path
+          description: ID of the garbage post containing the comment.
+          required: true
+          schema:
+            type: integer
+        - name: commentId
+          in: path
+          description: ID of the comment to be deleted.
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Comment deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating comment deletion.
+        '400':
+          description: Bad request, comment or post does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating comment or post does not exist.
+        '403':
+          description: Forbidden, user is not authorized to delete this comment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating user is not authorized.
+        '500':
+          description: Internal server error, failed to delete comment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
+
+  /api/users/garbage-posts/{garbagePostId}/reactions:
+    post:
+      tags:
+        - users
+      summary: Add a reaction to a garbage post
+      description: Add a reaction to a garbage post for the authenticated user.
+      operationId: addReactionToGarbagePost
+      parameters:
+        - name: garbagePostId
+          in: path
+          description: ID of the garbage post to react to.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Reaction data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type_id:
+                  type: integer
+                  description: ID of the reaction type.
+                  example: 1
+        required: true
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Reaction added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating reaction addition.
+                  reaction:
+                    type: object
+        '400':
+          description: Bad request, reaction type or post does not exist, or user has already reacted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating bad request.
+        '500':
+          description: Internal server error, failed to add reaction.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
+    delete:
+      tags:
+        - users
+      summary: Remove a reaction from a garbage post
+      description: Remove a user's reaction from a garbage post.
+      operationId: removeReactionFromGarbagePost
+      parameters:
+        - name: garbagePostId
+          in: path
+          description: ID of the garbage post from which to remove the reaction.
+          required: true
+          schema:
+            type: integer
+        - name: reactionId
+          in: path
+          description: ID of the reaction to be removed.
+          required: true
+          schema:
+            type: integer
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Reaction removed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating reaction removal.
+        '400':
+          description: Bad request, post or reaction does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating bad request.
+        '404':
+          description: Reaction not found or user not authorized to remove.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating reaction not found or unauthorized removal.
+        '500':
+          description: Internal server error, failed to remove reaction.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating internal server error.
+
+  /api/users/favorite-posts:
+    get:
+      tags:
+        - users
+      summary: Get the list of favorite posts for the authenticated user
+      description: Retrieve the list of posts marked as favorites by the authenticated user.
+      operationId: getFavoritePosts
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Successfully fetched the list of favorite posts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  favoritePosts:
+                    type: array
+                    description: List of favorite posts.
+                    items:
+                      type: object
+                      properties:
+                        post:
+                          type: object
+        '500':
+          description: An error occurred while fetching the favorites list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
+    post:
+      tags:
+        - users
+      summary: Add a post to the user's favorites list
+      description: Add a post to the list of favorites for the authenticated user.
+      operationId: addPostToFavorites
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The ID of the post to add to favorites.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                garbage_post_id:
+                  type: integer
+                  description: The ID of the post to add to favorites.
+      responses:
+        '201':
+          description: Successfully added the post to the favorites list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating the post was added to favorites.
+        '400':
+          description: The specified post does not exist or is already in the favorites list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating the issue with the request.
+        '500':
+          description: An error occurred while adding a post to the favorites list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
+    delete:
+      tags:
+        - users
+      summary: Remove a post from the user's favorites list
+      description: Remove a post from the list of favorites for the authenticated user.
+      operationId: removePostFromFavorites
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: The ID of the post to remove from favorites.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                garbage_post_id:
+                  type: integer
+                  description: The ID of the post to remove from favorites.
+      responses:
+        '201':
+          description: Successfully removed the post from the favorites list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message indicating the post was removed from favorites.
+        '400':
+          description: The specified post does not exist in the favorites list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating the issue with the request.
+        '500':
+          description: An error occurred while removing the post from the favorites list.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
+
+  /api/users/post-shares:
+    get:
+      tags:
+        - users
+      summary: Get the posts shared by the authenticated user
+      description: Retrieve the posts that have been shared by the authenticated user.
+      operationId: getPostShares
+      security:
+        - BearerAuth: []
+      responses:
+        '201':
+          description: Successfully retrieved the list of shared posts.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  postShares:
+                    type: array
+                    items:
+                      type: object
+        '500':
+          description: An error occurred while fetching the post shares.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
+    post:
+      tags:
+        - users
+      summary: Share a post
+      description: Share a garbage post by the authenticated user.
+      operationId: sharePost
+      security:
+        - BearerAuth: []
+      requestBody:
+        description: Request body for sharing a post.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                garbage_post_id:
+                  type: integer
+                  description: The ID of the post to be shared.
+              required:
+                - garbage_post_id
+      responses:
+        '201':
+          description: Post share has been created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                  postShare:
+                    $ref: '#/components/schemas/PostShare'
+        '400':
+          description: Post does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating that the post does not exist.
+        '500':
+          description: An error occurred while creating post share.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
+  /api/users/post-shares/{postShareId}:
+    delete:
+      tags:
+        - users
+      summary: Remove post share
+      description: Remove a post share by the authenticated user.
+      operationId: removePostShare
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: postShareId
+          in: path
+          description: The ID of the post share to be removed.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Post share has been deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+        '400':
+          description: Post share does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating that the post share does not exist.
+        '500':
+          description: An error occurred while deleting post share.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
+
+  /api/users/post-shares/{postShareId}/comments:
+    post:
+      tags:
+        - users
+      summary: Add a comment to a post share
+      description: Add a new comment to a post share by the authenticated user.
+      operationId: addCommentToPostShare
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: postShareId
+          in: path
+          description: The ID of the post share to which the comment will be added.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: The content of the comment.
+                parent_id:
+                  type: integer
+                  nullable: true
+                  description: The ID of the parent comment if this is a reply.
+      responses:
+        '201':
+          description: Comment created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                  comment:
+                    type: object
+                    description: The created comment.
+        '400':
+          description: Post share or parent comment does not exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating that the post share or parent comment does not exist.
+        '500':
+          description: Failed to create comment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
+
+  /api/users/post-shares/{postShareId}/comments/{commentId}:
+    delete:
+      tags:
+        - users
+      summary: Delete a comment from a post share
+      description: Delete a comment from a post share by the authenticated user.
+      operationId: deleteCommentFromPostShare
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: postShareId
+          in: path
+          description: The ID of the post share from which the comment will be deleted.
+          required: true
+          schema:
+            type: integer
+        - name: commentId
+          in: path
+          description: The ID of the comment to be deleted.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Comment deleted successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+        '400':
+          description: Comment does not exist or you are not authorized to delete it.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating that the comment does not exist or the user is not authorized to delete it.
+        '500':
+          description: Failed to delete comment.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
+
+  /api/users/post-shares/{postShareId}/reactions:
+    post:
+      tags:
+        - users
+      summary: Add a reaction to a post share
+      description: Add a reaction to a post share by the authenticated user.
+      operationId: addReactionToPostShare
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: postShareId
+          in: path
+          description: The ID of the post share to which the reaction will be added.
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Reaction data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type_id:
+                  type: integer
+                  description: The ID of the reaction type.
+              required:
+                - type_id
+      responses:
+        '201':
+          description: Reaction added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+                  reaction:
+                    type: object
+                    description: The details of the added reaction.
+        '400':
+          description: This type of reaction does not exist, or you have already reacted with this type.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating that the type of reaction does not exist or the user has already reacted.
+        '500':
+          description: Failed to add reaction.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
+
+  /api/users/post-shares/{postShareId}/reactions/{reactionId}:
+    delete:
+      tags:
+        - users
+      summary: Remove a reaction from a post share
+      description: Remove a reaction from a post share by the authenticated user.
+      operationId: removeReactionFromPostShare
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: postShareId
+          in: path
+          description: The ID of the post share from which the reaction will be removed.
+          required: true
+          schema:
+            type: integer
+        - name: reactionId
+          in: path
+          description: The ID of the reaction to be removed.
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Reaction removed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message.
+        '400':
+          description: This reaction does not exist in the post.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating that the reaction does not exist in the post.
+        '404':
+          description: Reaction not found or you are not authorized to remove this reaction.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating that the reaction was not found or the user is not authorized.
+        '500':
+          description: Failed to remove reaction.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating an internal server error.
